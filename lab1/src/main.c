@@ -4,7 +4,7 @@ void main()
 {
     // set up serial console
     uart_init();
-    get_board_revision();
+    sysinfo();
     // say hello
     uart_puts("Hello World!\n");
     
