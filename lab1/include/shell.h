@@ -3,6 +3,7 @@
 #define BUF_SIZE 1024
 #include "uart.h"
 #include "my_string.h"
+#include "reboot.h"
 enum ANSI_ESC {
     Unknown,
     CursorForward,

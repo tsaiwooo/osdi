@@ -100,7 +100,7 @@ void do_(char *cmd)
     }
     else if (!strcmp(cmd, "reboot")) {
         uart_printf("Rebooting...\n");
-        // reset();
+        reset(500);
         // while (1); // hang until reboot
     }
     else {
