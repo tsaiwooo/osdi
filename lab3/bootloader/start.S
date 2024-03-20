@@ -11,8 +11,12 @@ _start:
     // cpu id > 0, stop
 1:  wfe
     b       1b
-2:  // cpu id == 0
-    mov     x15, x0
+2:  
+    // load devicetree address
+    ldr x15, =0x8000000
+    str x0, [x15]
+    // cpu id == 0
+
     // set top of stack just before our code (stack grows to a lower address per AAPCS64)
     ldr     x1, =_start
     mov     sp, x1

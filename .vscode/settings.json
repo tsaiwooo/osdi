@@ -1,6 +1,14 @@
 {
-    "files.associations": {
-        "my_string.h": "c",
-        "uart.h": "c"
-    }
+  "files.associations": {
+    "my_string.h": "c",
+    "uart.h": "c",
+    "devicetree.h": "c",
+    "cpio.h": "c",
+    "mailbox.h": "c",
+    "shell.h": "c",
+    "main.h": "c",
+    "core_timer.h": "c",
+    "gpio.h": "c",
+    "exception.h": "c"
+  }
 }

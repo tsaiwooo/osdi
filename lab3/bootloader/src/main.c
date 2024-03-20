@@ -1,5 +1,5 @@
 #include "main.h"
-extern char *_dtb;
+extern char **_dtb;
 extern char *__relocoate_place;
 extern unsigned long long __code_size;
 extern char *__code_start;
@@ -11,7 +11,8 @@ int relo = 1;
 void main(char *args)
 {
     // x0會指向dtb, 所以x0可以讀取到DTB address
-    asm("mov %0, x15": "=r"(_dtb));
+    // asm("mov %0, x0": "=r"(_dtb));
+    *_dtb = (char *)0x8000000;
     // _dtb = args;
     // relocate bootloader to 0x60000
     // point to 0x60000
@@ -37,5 +38,5 @@ void relocate(char *addr)
         addr[i] = start[i];
     }
 
-    ((void (*)(char*))addr)(_dtb);  //jump to new place 
+    ((void (*)(char**))addr)(_dtb);  //jump to new place 
 }

@@ -5,6 +5,8 @@ void main(char *dtb)
     dtb_place = dtb;
     // set up serial console    
     uart_init();
+    uart_printf("%x\n",*dtb_place);
+    uart_printf("%x\n",dtb_place);
 
     fdt_traverse(dtb_callback_initramfs);
 
