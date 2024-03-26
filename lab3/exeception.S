@@ -2,7 +2,8 @@
  
  // save general registers to stack
 .macro save_all
-    sub sp, sp, 32 * 8
+    //sub sp, sp, 32 * 8
+    sub sp, sp, 32*9
     stp x0, x1, [sp ,16 * 0]
     stp x2, x3, [sp ,16 * 1]
     stp x4, x5, [sp ,16 * 2]
@@ -19,6 +20,10 @@
     stp x26, x27, [sp ,16 * 13]
     stp x28, x29, [sp ,16 * 14]
     str x30, [sp, 16 * 15]
+    mrs x0, spsr_el1
+    mrs x1, elr_el1
+    stp x0,x1,[sp, 16 * 16];
+    // store spsr_el,elr_el1 to prevent the higher priority interrupt
 .endm
 
 // load general registers from stack
@@ -39,7 +44,11 @@
     ldp x26, x27, [sp ,16 * 13]
     ldp x28, x29, [sp ,16 * 14]
     ldr x30, [sp, 16 * 15]
-    add sp, sp, 32 * 8
+    ldp x0, x1, [sp ,16 * 16]
+    msr spsr_el1, x0
+    msr elr_el1, x1
+    add sp, sp, 32 * 9
+    //add sp, sp, 32 * 8
 .endm
 
 .align 11 // vector table should be aligned to 0x800
@@ -199,9 +208,9 @@ core_timer_enable:
     mov     x0, #1
     msr     cntp_ctl_el0, x0 // enable 
 
-    mrs     x0, cntfrq_el0
-    add     x0,x0,x0 // 2s
-    msr     cntp_tval_el0, x0 // set expired time
+    //mrs     x0, cntfrq_el0
+    //add     x0,x0,x0 // 2s
+    //msr     cntp_tval_el0, x0 // set expired time
     //bl      set_expired_time
 
     mov     x0, #2 // CNTPNSIRQ IRQ control
@@ -211,4 +220,11 @@ core_timer_enable:
     //mov     x3, #0
     //msr     spsr_el1, x3
     //msr     elr_el1, lr
+    ret
+
+.global core_timer_disable
+core_timer_disable:
+    mov     x0, #0
+    ldr     x1, =0x40000040
+    str     w0, [x1]
     ret

@@ -2,8 +2,8 @@
 #define __IRQ_H_
 #include "core_timer.h"
 #include "gpio.h"
+#include "malloc.h"
 #include "uart.h"
-
 /*
 https://github.com/Tekki/raspberrypi-documentation/blob/master/hardware/raspberrypi/bcm2836/QA7_rev3.4.pdf
 p.7 register address
@@ -40,4 +40,20 @@ https://cs140e.sergio.bz/docs/BCM2837-ARM-Peripherals.pdf p.113
 */
 #define AUX_INT 1 << 29
 
-#endif // __IRQ_H_
+typedef void (*callback_type)(char *);
+typedef struct irq_task_ irq_task;
+struct irq_task_ {
+  int nice_value;
+  int trigger;
+  int seconds;
+  char message[128];
+  // void(callback)(char *);
+  void (*callback)(char *);
+  // callback_type callback;
+  irq_task *next;
+};
+irq_task *timer_queue, *task_queue;
+void add_irq(void (*callback)(char *), char *message, int seconds,
+             int nice_value);
+void pop_irq();
+#endif  // __IRQ_H_

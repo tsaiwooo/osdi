@@ -11,7 +11,7 @@ void main(char *dtb) {
   dtb_place = dtb;
 #else
 #ifdef bootloader
-  asm("mov %0, x10" : "=r"(dtb_place)); // this line also ok!!
+  asm("mov %0, x10" : "=r"(dtb_place));  // this line also ok!!
 #endif
 #endif
   // set up serial console
@@ -40,5 +40,14 @@ void main(char *dtb) {
   // int el=0;
   // asm volatile("mrs %0, CurrentEL\n\t":"=r"(el):);
   // uart_printf("EL = %d\n",el);
+  // timer_on();
+  // asm volatile(
+  //     "mov x3, 0x0\n\t"
+  //     "msr spsr_el1, x3\n\t"
+  //     "msr elr_el1, %[data]\n\t"
+  //     "msr sp_el0, %[stack_ptr]\n\t"
+  //     "eret"
+  //     :
+  //     : [data] "r"(shell), [stack_ptr] "r"(0x10000));
   shell();
 }

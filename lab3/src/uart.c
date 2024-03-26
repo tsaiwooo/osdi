@@ -4,17 +4,17 @@ void uart_init() {
   register unsigned int r;
 
   /* initialize UART */
-  *AUX_ENABLE |= 1; // enable UART1, AUX mini uart
+  *AUX_ENABLE |= 1;  // enable UART1, AUX mini uart
   *AUX_MU_CNTL = 0;
-  *AUX_MU_LCR = 3; // 8 bits
+  *AUX_MU_LCR = 3;  // 8 bits
   *AUX_MU_MCR = 0;
   *AUX_MU_IER = 0;
-  *AUX_MU_IIR = 0x6;  // disable interrupts
-  *AUX_MU_BAUD = 270; // 115200 baud
+  *AUX_MU_IIR = 0x6;   // disable interrupts
+  *AUX_MU_BAUD = 270;  // 115200 baud
   /* map UART1 to GPIO pins */
   r = *GPFSEL1;
-  r &= ~((7 << 12) | (7 << 15)); // gpio14, gpio15
-  r |= (2 << 12) | (2 << 15);    // alt5
+  r &= ~((7 << 12) | (7 << 15));  // gpio14, gpio15
+  r |= (2 << 12) | (2 << 15);     // alt5
   *GPFSEL1 = r;
   // enable pins 14 and 15
   *GPPUD = 0;
@@ -27,8 +27,8 @@ void uart_init() {
   while (r--) {
     asm volatile("nop");
   }
-  *GPPUDCLK0 = 0;   // flush GPIO setup
-  *AUX_MU_CNTL = 3; // enable Tx, Rx
+  *GPPUDCLK0 = 0;    // flush GPIO setup
+  *AUX_MU_CNTL = 3;  // enable Tx, Rx
 }
 
 /**
@@ -64,8 +64,7 @@ char uart_getc() {
 void uart_puts(char *s) {
   while (*s) {
     /* convert newline to carriage return + newline */
-    if (*s == '\n')
-      uart_send('\r');
+    if (*s == '\n') uart_send('\r');
     uart_send(*s++);
   }
 }
@@ -74,8 +73,8 @@ void uart_printf(char *fmt, ...) {
   __builtin_va_list args;
   __builtin_va_start(args, fmt);
 
-  extern volatile unsigned char _end; // defined in linker
-  char *s = (char *)&_end;            // put temporary string after code
+  extern volatile unsigned char _end;  // defined in linker
+  char *s = (char *)&_end;             // put temporary string after code
   vsprintf(s, fmt, args);
 
   uart_puts(s);
@@ -99,10 +98,10 @@ AUX_MU_IER
 0 : enable receive interrupts
 */
 
-volatile tx_buf[1024] = {};
+volatile char tx_buf[1024] = {};
 volatile unsigned int tx_write_idx = 0;
 volatile unsigned int tx_read_idx = 0;
-volatile rx_buf[1024] = {};
+volatile char rx_buf[1024] = {};
 volatile unsigned int rx_write_idx = 0;
 volatile unsigned int rx_read_idx = 0;
 
@@ -119,8 +118,7 @@ void async_handler() {
     }
 
     *AUX_MU_IO = tx_buf[tx_read_idx++];
-    if (tx_read_idx >= MAX_BUF_SIZE)
-      tx_read_idx = 0; // cycle pointer
+    if (tx_read_idx >= MAX_BUF_SIZE) tx_read_idx = 0;  // cycle pointer
   }
   // read
   else if (*AUX_MU_IIR & (0b10 << 1)) {
@@ -132,8 +130,7 @@ void async_handler() {
     // }
     char ch = (char)(*AUX_MU_IO);
     rx_buf[rx_write_idx++] = (ch == '\r') ? '\n' : ch;
-    if (rx_write_idx >= MAX_BUF_SIZE)
-      rx_write_idx = 0;
+    if (rx_write_idx >= MAX_BUF_SIZE) rx_write_idx = 0;
     enable_uart_r_interrupt();
   }
   *IRQs1 |= AUX_INT;
@@ -143,8 +140,7 @@ void async_handler() {
 void async_send(char ch) {
   tx_buf[tx_write_idx] = ch;
   tx_write_idx++;
-  if (tx_write_idx >= MAX_BUF_SIZE)
-    tx_write_idx = 0;
+  if (tx_write_idx >= MAX_BUF_SIZE) tx_write_idx = 0;
   enable_uart_w_interrupt();
 }
 
@@ -154,8 +150,7 @@ char async_getc() {
   }
   char ch = rx_buf[rx_read_idx];
   rx_read_idx++;
-  if (rx_read_idx >= MAX_BUF_SIZE)
-    rx_read_idx = 0;
+  if (rx_read_idx >= MAX_BUF_SIZE) rx_read_idx = 0;
 
   return ch;
 }

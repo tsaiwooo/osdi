@@ -5,6 +5,7 @@
 #include "cpio.h"
 #include "irq.h"
 #include "mailbox.h"
+#include "malloc.h"
 #include "my_string.h"
 #include "reboot.h"
 #include "uart.h"
@@ -14,4 +15,4 @@ enum ANSI_ESC parse_CSI();
 void shell();
 void shell_decode(char *);
 void do_(char *);
-#endif // _SHELL_H_
+#endif  // _SHELL_H_

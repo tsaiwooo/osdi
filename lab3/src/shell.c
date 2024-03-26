@@ -18,30 +18,28 @@ void shell_decode(char *cmd) {
     if (c == 27) {
       enum ANSI_ESC key = parse_CSI();
       switch (key) {
-      case CursorForward:
-        if (idx < end)
-          idx++;
-        break;
-      case CursorBackward:
-        if (idx > 0)
-          idx--;
-        break;
-      case Delete:
-        for (i = idx; i < end; i++) {
-          cmd[i] = cmd[i + 1];
-        }
-        cmd[--end] = '\0';
-        break;
-      case Unknown:
-        uart_flush();
-        break;
-      default:
-        break;
+        case CursorForward:
+          if (idx < end) idx++;
+          break;
+        case CursorBackward:
+          if (idx > 0) idx--;
+          break;
+        case Delete:
+          for (i = idx; i < end; i++) {
+            cmd[i] = cmd[i + 1];
+          }
+          cmd[--end] = '\0';
+          break;
+        case Unknown:
+          uart_flush();
+          break;
+        default:
+          break;
       }
-    } else if (c == 3) { // CTRL-C
+    } else if (c == 3) {  // CTRL-C
       cmd[0] = '\0';
       break;
-    } else if (c == 8 || c == 127) { // Backapce
+    } else if (c == 8 || c == 127) {  // Backapce
       if (idx > 0) {
         idx--;
         for (i = idx; i < end; i++) {
@@ -95,6 +93,9 @@ void do_(char *cmd) {
     uart_printf("exec <program> : test el1 to el0 exception\n");
     uart_printf("timer_on : turn on the timer\n");
     uart_printf("async_test: input a string and print with asynchronous\n");
+    uart_printf(
+        "setTimeout <message> <seconds> : print messages every seconds deponds "
+        "on what you input\n");
   } else if (!strcmp(cmd, "hello")) {
     uart_printf("Hello World!\n");
   } else if (!strcmp(cmd, "reboot")) {
@@ -122,7 +123,8 @@ void do_(char *cmd) {
     sysinfo();
   } else if (!strcmp("timer_on", cmd)) {
     // core_timer_enable();
-    timer_on();
+    // timer_on();
+    add_irq(&print_time_mes, "timer_on", 2, 0);
   } else if (!strcmp("async_test", cmd)) {
     uart_printf("please input a string\n");
     *IRQs1 |= AUX_INT;
@@ -142,6 +144,24 @@ void do_(char *cmd) {
     disable_uart_w_interrupt();
     disable_uart_r_interrupt();
     *IRQ_disable1 |= AUX_INT;
+  } else if (!strncmp("setTimeout", cmd, 10)) {
+    char *ch = cmd + 11;
+    // store message
+    char message[128];
+    char *ptr = message;
+    while (*ch != ' ') {
+      *ptr++ = *ch++;
+    }
+    ch++;
+    *ptr = '\0';
+    // store seconds
+    int seconds = 0;
+    while (*ch >= '0' && *ch <= '9') {
+      seconds *= 10;
+      seconds += (*ch - 48);
+      ch++;
+    }
+    add_irq(&print_time_mes, message, seconds, 0);
   } else {
     uart_printf("shell: command not found: %s\n", cmd);
   }

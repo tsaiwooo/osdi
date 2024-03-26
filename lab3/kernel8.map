@@ -3,7 +3,9 @@ Allocating common symbols
 Common symbol       size              file
 
 mbox                0x20              out/mailbox.o
+timer_queue         0x8               out/mailbox.o
 CPIO_DEFAULT_PLACE  0x8               out/shell.o
+task_queue          0x8               out/mailbox.o
 dtb_place           0x8               out/devicetree.o
 
 Discarded input sections
@@ -11,31 +13,31 @@ Discarded input sections
  .comment       0x0000000000000000       0x2c out/mailbox.o
  .note.GNU-stack
                 0x0000000000000000        0x0 out/mailbox.o
- .eh_frame      0x0000000000000000       0x90 out/mailbox.o
+ .eh_frame      0x0000000000000000       0x98 out/mailbox.o
  .comment       0x0000000000000000       0x2c out/core_timer.o
  .note.GNU-stack
                 0x0000000000000000        0x0 out/core_timer.o
- .eh_frame      0x0000000000000000       0x48 out/core_timer.o
+ .eh_frame      0x0000000000000000       0x88 out/core_timer.o
  .comment       0x0000000000000000       0x2c out/uart.o
  .note.GNU-stack
                 0x0000000000000000        0x0 out/uart.o
- .eh_frame      0x0000000000000000      0x128 out/uart.o
+ .eh_frame      0x0000000000000000      0x160 out/uart.o
  .comment       0x0000000000000000       0x2c out/irq.o
  .note.GNU-stack
                 0x0000000000000000        0x0 out/irq.o
- .eh_frame      0x0000000000000000       0x38 out/irq.o
+ .eh_frame      0x0000000000000000       0x78 out/irq.o
  .comment       0x0000000000000000       0x2c out/shell.o
  .note.GNU-stack
                 0x0000000000000000        0x0 out/shell.o
- .eh_frame      0x0000000000000000      0x100 out/shell.o
+ .eh_frame      0x0000000000000000       0x90 out/shell.o
  .comment       0x0000000000000000       0x2c out/my_string.o
  .note.GNU-stack
                 0x0000000000000000        0x0 out/my_string.o
- .eh_frame      0x0000000000000000      0x170 out/my_string.o
+ .eh_frame      0x0000000000000000      0x130 out/my_string.o
  .comment       0x0000000000000000       0x2c out/exeception.o
  .note.GNU-stack
                 0x0000000000000000        0x0 out/exeception.o
- .eh_frame      0x0000000000000000       0x60 out/exeception.o
+ .eh_frame      0x0000000000000000       0x58 out/exeception.o
  .comment       0x0000000000000000       0x2c out/math_.o
  .note.GNU-stack
                 0x0000000000000000        0x0 out/math_.o
@@ -43,11 +45,11 @@ Discarded input sections
  .comment       0x0000000000000000       0x2c out/devicetree.o
  .note.GNU-stack
                 0x0000000000000000        0x0 out/devicetree.o
- .eh_frame      0x0000000000000000       0xe0 out/devicetree.o
+ .eh_frame      0x0000000000000000       0x70 out/devicetree.o
  .comment       0x0000000000000000       0x2c out/cpio.o
  .note.GNU-stack
                 0x0000000000000000        0x0 out/cpio.o
- .eh_frame      0x0000000000000000      0x138 out/cpio.o
+ .eh_frame      0x0000000000000000       0xd0 out/cpio.o
  .comment       0x0000000000000000       0x2c out/main.o
  .note.GNU-stack
                 0x0000000000000000        0x0 out/main.o
@@ -55,11 +57,11 @@ Discarded input sections
  .comment       0x0000000000000000       0x2c out/malloc.o
  .note.GNU-stack
                 0x0000000000000000        0x0 out/malloc.o
- .eh_frame      0x0000000000000000       0x28 out/malloc.o
+ .eh_frame      0x0000000000000000       0x30 out/malloc.o
  .comment       0x0000000000000000       0x2c out/reboot.o
  .note.GNU-stack
                 0x0000000000000000        0x0 out/reboot.o
- .eh_frame      0x0000000000000000       0x50 out/reboot.o
+ .eh_frame      0x0000000000000000       0x70 out/reboot.o
 
 Memory Configuration
 
@@ -85,258 +87,245 @@ LOAD out/malloc.o
 LOAD out/reboot.o
                 0x0000000000080000                . = 0x80000
 
-.text           0x0000000000080000     0x33a8
+.text           0x0000000000080000     0x4414
  *(.text.boot)
  .text.boot     0x0000000000080000       0xa0 start.o
                 0x0000000000080000                _start
  *(.text)
  .text          0x00000000000800a0        0x0 start.o
  *fill*         0x00000000000800a0      0x760 
- .text          0x0000000000080800     0x1170 exeception.o
+ .text          0x0000000000080800     0x12f0 exeception.o
                 0x0000000000080800                exception_vector_table
-                0x0000000000081940                core_timer_enable
- .text          0x0000000000081970      0x208 out/mailbox.o
-                0x0000000000081970                mailbox_call
-                0x0000000000081a08                get_info
-                0x0000000000081a50                get_info_mem
-                0x0000000000081a98                sysinfo
- .text          0x0000000000081b78       0x34 out/core_timer.o
-                0x0000000000081b78                timer_on
-                0x0000000000081b98                set_expired_time
- *fill*         0x0000000000081bac        0x4 
- .text          0x0000000000081bb0      0x4e0 out/uart.o
-                0x0000000000081bb0                uart_init
-                0x0000000000081c98                uart_send
-                0x0000000000081cc0                uart_getc
-                0x0000000000081cf8                uart_puts
-                0x0000000000081d58                uart_printf
-                0x0000000000081df0                uart_flush
-                0x0000000000081e18                async_handler
-                0x0000000000081f78                async_send
-                0x0000000000081fc8                async_getc
-                0x0000000000082030                enable_uart_r_interrupt
-                0x0000000000082048                disable_uart_r_interrupt
-                0x0000000000082060                enable_uart_w_interrupt
-                0x0000000000082078                disable_uart_w_interrupt
- .text          0x0000000000082090       0x54 out/irq.o
-                0x0000000000082090                irq_handle
- *fill*         0x00000000000820e4        0x4 
- .text          0x00000000000820e8      0x4cc out/shell.o
-                0x00000000000820e8                parse_CSI
-                0x0000000000082150                shell_decode
-                0x0000000000082310                do_
-                0x0000000000082588                shell
- *fill*         0x00000000000825b4        0x4 
- .text          0x00000000000825b8      0x640 out/my_string.o
-                0x00000000000825b8                itoa
-                0x0000000000082660                ftoa
-                0x00000000000827a0                strcmp
-                0x00000000000827e0                itox
-                0x0000000000082898                vsprintf
-                0x0000000000082b30                strlen
-                0x0000000000082b58                strcpy
-                0x0000000000082b80                strncmp
-                0x0000000000082bc0                align_up
-                0x0000000000082bd8                memcpy
- .text          0x0000000000082bf8       0x70 out/exeception.o
-                0x0000000000082bf8                exeception_handle
-                0x0000000000082c58                enable_interrupt
-                0x0000000000082c60                disable_interrupt
- .text          0x0000000000082c68       0x2c out/math_.o
-                0x0000000000082c68                pow
- *fill*         0x0000000000082c94        0x4 
- .text          0x0000000000082c98      0x2c0 out/devicetree.o
-                0x0000000000082c98                uint32_endian_big2lttle
-                0x0000000000082ca0                fdt_traverse
-                0x0000000000082ef0                dtb_callback_initramfs
- .text          0x0000000000082f58      0x3dc out/cpio.o
-                0x0000000000082f58                parse_hex
-                0x0000000000082fd8                cpio_parse_header
-                0x00000000000830e0                ls
-                0x0000000000083168                cat
-                0x0000000000083240                exec_file
-                0x0000000000083298                exec
- .text          0x0000000000083334        0x0 out/main.o
- *fill*         0x0000000000083334        0x4 
- .text          0x0000000000083338       0x18 out/malloc.o
-                0x0000000000083338                simple_malloc
- .text          0x0000000000083350       0x58 out/reboot.o
-                0x0000000000083350                set
-                0x0000000000083358                reset
-                0x0000000000083388                cancel_reset
+                0x0000000000081ac0                core_timer_enable
+                0x0000000000081ad8                core_timer_disable
+ .text          0x0000000000081af0      0x2c8 out/mailbox.o
+                0x0000000000081af0                sysinfo
+                0x0000000000081bb8                get_info
+                0x0000000000081c58                get_info_mem
+                0x0000000000081d04                mailbox_call
+ .text          0x0000000000081db8       0xc0 out/core_timer.o
+                0x0000000000081db8                timer_on
+                0x0000000000081dd8                set_expired_time
+                0x0000000000081e04                current_time
+                0x0000000000081e2c                print_time_mes
+ .text          0x0000000000081e78      0x62c out/uart.o
+                0x0000000000081e78                uart_init
+                0x0000000000081f90                uart_send
+                0x0000000000081fd0                uart_getc
+                0x0000000000082020                uart_puts
+                0x000000000008207c                uart_printf
+                0x0000000000082138                uart_flush
+                0x000000000008216c                async_handler
+                0x0000000000082308                async_send
+                0x0000000000082380                async_getc
+                0x0000000000082414                enable_uart_r_interrupt
+                0x0000000000082438                disable_uart_r_interrupt
+                0x000000000008245c                enable_uart_w_interrupt
+                0x0000000000082480                disable_uart_w_interrupt
+ .text          0x00000000000824a4      0x308 out/irq.o
+                0x00000000000824a4                irq_handle
+                0x00000000000824f8                add_irq
+                0x0000000000082710                pop_irq
+ .text          0x00000000000827ac      0x76c out/shell.o
+                0x00000000000827ac                shell
+                0x00000000000827cc                shell_decode
+                0x0000000000082ab0                parse_CSI
+                0x0000000000082b30                do_
+ .text          0x0000000000082f18      0xa10 out/my_string.o
+                0x0000000000082f18                vsprintf
+                0x0000000000083278                itoa
+                0x00000000000833c4                ftoa
+                0x0000000000083544                strcmp
+                0x00000000000835bc                itox
+                0x00000000000836dc                strlen
+                0x0000000000083720                strcpy
+                0x000000000008377c                strncpy
+                0x00000000000837e0                strncmp
+                0x0000000000083894                align_up
+                0x00000000000838c4                memcpy
+ .text          0x0000000000083928       0x84 out/exeception.o
+                0x0000000000083928                exeception_handle
+                0x0000000000083994                enable_interrupt
+                0x00000000000839a0                disable_interrupt
+ .text          0x00000000000839ac       0x3c out/math_.o
+                0x00000000000839ac                pow
+ .text          0x00000000000839e8      0x338 out/devicetree.o
+                0x00000000000839e8                uint32_endian_big2lttle
+                0x0000000000083a48                fdt_traverse
+                0x0000000000083cb8                dtb_callback_initramfs
+ .text          0x0000000000083d20      0x500 out/cpio.o
+                0x0000000000083d20                parse_hex
+                0x0000000000083e7c                cpio_parse_header
+                0x0000000000083fa8                ls
+                0x0000000000084030                cat
+                0x0000000000084100                exec
+                0x0000000000084190                exec_file
+ .text          0x0000000000084220       0xf8 out/main.o
+                0x0000000000084220                main
+ .text          0x0000000000084318       0x54 out/malloc.o
+                0x0000000000084318                simple_malloc
+ .text          0x000000000008436c       0xa8 out/reboot.o
+                0x000000000008436c                set
+                0x0000000000084398                reset
+                0x00000000000843e0                cancel_reset
 
-.iplt           0x00000000000833a8        0x0
- .iplt          0x00000000000833a8        0x0 start.o
+.iplt           0x0000000000084414        0x0
+ .iplt          0x0000000000084414        0x0 start.o
 
-.text.startup   0x00000000000833a8       0xdc
- .text.startup  0x00000000000833a8       0xdc out/main.o
-                0x00000000000833a8                main
-
-.rela.dyn       0x0000000000083488        0x0
- .rela.iplt     0x0000000000083488        0x0 start.o
- .rela.text.boot
-                0x0000000000083488        0x0 start.o
- .rela.got      0x0000000000083488        0x0 start.o
- .rela.data.rel
-                0x0000000000083488        0x0 start.o
-
-.rodata
+.rodata         0x0000000000084418      0x505
  *(.rodata)
+ .rodata        0x0000000000084418       0x71 out/mailbox.o
+ *fill*         0x0000000000084489        0x7 
+ .rodata        0x0000000000084490        0x9 out/core_timer.o
+ *fill*         0x0000000000084499        0x7 
+ .rodata        0x00000000000844a0       0x44 out/irq.o
+ *fill*         0x00000000000844e4        0x4 
+ .rodata        0x00000000000844e8      0x2ce out/shell.o
+ *fill*         0x00000000000847b6        0x2 
+ .rodata        0x00000000000847b8       0x50 out/exeception.o
+ .rodata        0x0000000000084808       0x4b out/devicetree.o
+ *fill*         0x0000000000084853        0x5 
+ .rodata        0x0000000000084858       0x48 out/cpio.o
+ .rodata        0x00000000000848a0       0x7d out/main.o
                 [!provide]                        PROVIDE (_data = .)
 
-.rodata.str1.8  0x0000000000083488      0x465
- .rodata.str1.8
-                0x0000000000083488       0x69 out/mailbox.o
-                                         0x71 (size before relaxing)
- *fill*         0x00000000000834f1        0x7 
- .rodata.str1.8
-                0x00000000000834f8       0x16 out/core_timer.o
- *fill*         0x000000000008350e        0x2 
- .rodata.str1.8
-                0x0000000000083510       0x1b out/irq.o
- *fill*         0x000000000008352b        0x5 
- .rodata.str1.8
-                0x0000000000083530      0x24e out/shell.o
-                                        0x25e (size before relaxing)
- *fill*         0x000000000008377e        0x2 
- .rodata.str1.8
-                0x0000000000083780       0x50 out/exeception.o
- .rodata.str1.8
-                0x00000000000837d0       0x63 out/devicetree.o
- *fill*         0x0000000000083833        0x5 
- .rodata.str1.8
-                0x0000000000083838       0x48 out/cpio.o
- .rodata.str1.8
-                0x0000000000083880       0x6d out/main.o
-                                         0x7d (size before relaxing)
+.rela.dyn       0x0000000000084920        0x0
+ .rela.iplt     0x0000000000084920        0x0 start.o
+ .rela.text.boot
+                0x0000000000084920        0x0 start.o
+ .rela.got      0x0000000000084920        0x0 start.o
+ .rela.data.rel
+                0x0000000000084920        0x0 start.o
 
-.data           0x00000000000838ed        0x0
+.data           0x000000000008491d        0x0
  *(.data)
- .data          0x00000000000838ed        0x0 start.o
- .data          0x00000000000838ed        0x0 exeception.o
- .data          0x00000000000838ed        0x0 out/mailbox.o
- .data          0x00000000000838ed        0x0 out/core_timer.o
- .data          0x00000000000838ed        0x0 out/uart.o
- .data          0x00000000000838ed        0x0 out/irq.o
- .data          0x00000000000838ed        0x0 out/shell.o
- .data          0x00000000000838ed        0x0 out/my_string.o
- .data          0x00000000000838ed        0x0 out/exeception.o
- .data          0x00000000000838ed        0x0 out/math_.o
- .data          0x00000000000838ed        0x0 out/devicetree.o
- .data          0x00000000000838ed        0x0 out/cpio.o
- .data          0x00000000000838ed        0x0 out/main.o
- .data          0x00000000000838ed        0x0 out/malloc.o
- .data          0x00000000000838ed        0x0 out/reboot.o
+ .data          0x000000000008491d        0x0 start.o
+ .data          0x000000000008491d        0x0 exeception.o
+ .data          0x000000000008491d        0x0 out/mailbox.o
+ .data          0x000000000008491d        0x0 out/core_timer.o
+ .data          0x000000000008491d        0x0 out/uart.o
+ .data          0x000000000008491d        0x0 out/irq.o
+ .data          0x000000000008491d        0x0 out/shell.o
+ .data          0x000000000008491d        0x0 out/my_string.o
+ .data          0x000000000008491d        0x0 out/exeception.o
+ .data          0x000000000008491d        0x0 out/math_.o
+ .data          0x000000000008491d        0x0 out/devicetree.o
+ .data          0x000000000008491d        0x0 out/cpio.o
+ .data          0x000000000008491d        0x0 out/main.o
+ .data          0x000000000008491d        0x0 out/malloc.o
+ .data          0x000000000008491d        0x0 out/reboot.o
 
-.igot.plt       0x00000000000838f0        0x0
- .igot.plt      0x00000000000838f0        0x0 start.o
+.igot.plt       0x0000000000084920        0x0
+ .igot.plt      0x0000000000084920        0x0 start.o
 
-.got            0x00000000000838f0       0x30
- .got           0x00000000000838f0       0x30 start.o
-                0x00000000000838f0                _GLOBAL_OFFSET_TABLE_
+.got            0x0000000000084920       0x40
+ .got           0x0000000000084920       0x40 start.o
+                0x0000000000084920                _GLOBAL_OFFSET_TABLE_
 
-.got.plt        0x0000000000083920       0x18
- .got.plt       0x0000000000083920       0x18 start.o
+.got.plt        0x0000000000084960       0x18
+ .got.plt       0x0000000000084960       0x18 start.o
 
-.data.rel       0x0000000000083938        0x8
- .data.rel      0x0000000000083938        0x8 out/malloc.o
-                0x0000000000083938                top
+.data.rel       0x0000000000084978        0x8
+ .data.rel      0x0000000000084978        0x8 out/malloc.o
+                0x0000000000084978                top
 
-.bss            0x0000000000083940     0x2040
-                0x0000000000083940                . = ALIGN (0x10)
-                0x0000000000083940                __bss_start = .
+.bss            0x0000000000084980      0x850
+                0x0000000000084980                . = ALIGN (0x10)
+                0x0000000000084980                __bss_start = .
  *(.bss .bss.*)
- .bss           0x0000000000083940        0x0 start.o
- .bss           0x0000000000083940        0x0 exeception.o
- .bss           0x0000000000083940        0x0 out/mailbox.o
- .bss           0x0000000000083940        0x0 out/core_timer.o
- .bss           0x0000000000083940     0x2010 out/uart.o
-                0x0000000000083940                tx_write_idx
-                0x0000000000083944                tx_read_idx
-                0x0000000000083948                rx_write_idx
-                0x000000000008394c                rx_read_idx
-                0x0000000000083950                rx_buf
-                0x0000000000084950                tx_buf
- .bss           0x0000000000085950        0x0 out/irq.o
- .bss           0x0000000000085950        0x0 out/shell.o
- .bss           0x0000000000085950        0x0 out/my_string.o
- .bss           0x0000000000085950        0x0 out/exeception.o
- .bss           0x0000000000085950        0x0 out/math_.o
- .bss           0x0000000000085950        0x0 out/devicetree.o
- .bss           0x0000000000085950        0x0 out/cpio.o
- .bss           0x0000000000085950        0x0 out/main.o
- .bss           0x0000000000085950        0x0 out/malloc.o
- .bss           0x0000000000085950        0x0 out/reboot.o
+ .bss           0x0000000000084980        0x0 start.o
+ .bss           0x0000000000084980        0x0 exeception.o
+ .bss           0x0000000000084980        0x0 out/mailbox.o
+ .bss           0x0000000000084980        0x0 out/core_timer.o
+ .bss           0x0000000000084980      0x810 out/uart.o
+                0x0000000000084980                tx_buf
+                0x0000000000084d80                tx_write_idx
+                0x0000000000084d84                tx_read_idx
+                0x0000000000084d88                rx_buf
+                0x0000000000085188                rx_write_idx
+                0x000000000008518c                rx_read_idx
+ .bss           0x0000000000085190        0x0 out/irq.o
+ .bss           0x0000000000085190        0x0 out/shell.o
+ .bss           0x0000000000085190        0x0 out/my_string.o
+ .bss           0x0000000000085190        0x0 out/exeception.o
+ .bss           0x0000000000085190        0x0 out/math_.o
+ .bss           0x0000000000085190        0x0 out/devicetree.o
+ .bss           0x0000000000085190        0x0 out/cpio.o
+ .bss           0x0000000000085190        0x0 out/main.o
+ .bss           0x0000000000085190        0x0 out/malloc.o
+ .bss           0x0000000000085190        0x0 out/reboot.o
  *(COMMON)
- COMMON         0x0000000000085950       0x20 out/mailbox.o
-                0x0000000000085950                mbox
- COMMON         0x0000000000085970        0x8 out/shell.o
-                0x0000000000085970                CPIO_DEFAULT_PLACE
- COMMON         0x0000000000085978        0x8 out/devicetree.o
-                0x0000000000085978                dtb_place
-                0x0000000000085980                __bss_end = .
-                0x0000000000095980                _heap_start = (. + 0x10000)
-                0x0000000000085980                _end = .
+ COMMON         0x0000000000085190       0x30 out/mailbox.o
+                0x0000000000085190                mbox
+                0x00000000000851b0                timer_queue
+                0x00000000000851b8                task_queue
+ COMMON         0x00000000000851c0        0x8 out/shell.o
+                0x00000000000851c0                CPIO_DEFAULT_PLACE
+ COMMON         0x00000000000851c8        0x8 out/devicetree.o
+                0x00000000000851c8                dtb_place
+                0x00000000000851d0                __bss_end = .
+                0x00000000000851d0                _end = .
 
 /DISCARD/
  *(.comment)
  *(.gnu*)
  *(.note*)
  *(.eh_frame*)
-                0x0000000000000408                __bss_size = ((__bss_end - __bss_start) >> 0x3)
+                0x000000000000010a                __bss_size = ((__bss_end - __bss_start) >> 0x3)
+                0x0000000000100000                _heap_start = 0x100000
 OUTPUT(kernel8.elf elf64-littleaarch64)
 LOAD linker stubs
 
-.debug_line     0x0000000000000000     0x1d48
+.debug_line     0x0000000000000000     0x131d
  .debug_line    0x0000000000000000       0x5e start.o
- .debug_line    0x000000000000005e       0xd8 exeception.o
- .debug_line    0x0000000000000136      0x2d7 out/mailbox.o
- .debug_line    0x000000000000040d       0x9d out/core_timer.o
- .debug_line    0x00000000000004aa      0x4ba out/uart.o
- .debug_line    0x0000000000000964       0x97 out/irq.o
- .debug_line    0x00000000000009fb      0x46d out/shell.o
- .debug_line    0x0000000000000e68      0x5a3 out/my_string.o
- .debug_line    0x000000000000140b       0xa6 out/exeception.o
- .debug_line    0x00000000000014b1       0x5a out/math_.o
- .debug_line    0x000000000000150b      0x303 out/devicetree.o
- .debug_line    0x000000000000180e      0x327 out/cpio.o
- .debug_line    0x0000000000001b35       0xf9 out/main.o
- .debug_line    0x0000000000001c2e       0x72 out/malloc.o
- .debug_line    0x0000000000001ca0       0xa8 out/reboot.o
+ .debug_line    0x000000000000005e       0xd9 exeception.o
+ .debug_line    0x0000000000000137      0x111 out/mailbox.o
+ .debug_line    0x0000000000000248       0x96 out/core_timer.o
+ .debug_line    0x00000000000002de      0x276 out/uart.o
+ .debug_line    0x0000000000000554      0x14e out/irq.o
+ .debug_line    0x00000000000006a2      0x315 out/shell.o
+ .debug_line    0x00000000000009b7      0x3bf out/my_string.o
+ .debug_line    0x0000000000000d76       0x83 out/exeception.o
+ .debug_line    0x0000000000000df9       0x48 out/math_.o
+ .debug_line    0x0000000000000e41      0x149 out/devicetree.o
+ .debug_line    0x0000000000000f8a      0x21b out/cpio.o
+ .debug_line    0x00000000000011a5       0xa7 out/main.o
+ .debug_line    0x000000000000124c       0x6f out/malloc.o
+ .debug_line    0x00000000000012bb       0x62 out/reboot.o
 
-.debug_info     0x0000000000000000     0x2edf
+.debug_info     0x0000000000000000     0x246b
  .debug_info    0x0000000000000000       0x2e start.o
  .debug_info    0x000000000000002e       0x2e exeception.o
- .debug_info    0x000000000000005c      0x318 out/mailbox.o
- .debug_info    0x0000000000000374       0xe6 out/core_timer.o
- .debug_info    0x000000000000045a      0x4cf out/uart.o
- .debug_info    0x0000000000000929      0x104 out/irq.o
- .debug_info    0x0000000000000a2d      0x7fb out/shell.o
- .debug_info    0x0000000000001228      0x71e out/my_string.o
- .debug_info    0x0000000000001946      0x175 out/exeception.o
- .debug_info    0x0000000000001abb       0xa4 out/math_.o
- .debug_info    0x0000000000001b5f      0x616 out/devicetree.o
- .debug_info    0x0000000000002175      0x769 out/cpio.o
- .debug_info    0x00000000000028de      0x32f out/main.o
- .debug_info    0x0000000000002c0d       0xb9 out/malloc.o
- .debug_info    0x0000000000002cc6      0x219 out/reboot.o
+ .debug_info    0x000000000000005c      0x233 out/mailbox.o
+ .debug_info    0x000000000000028f      0x223 out/core_timer.o
+ .debug_info    0x00000000000004b2      0x442 out/uart.o
+ .debug_info    0x00000000000008f4      0x260 out/irq.o
+ .debug_info    0x0000000000000b54      0x33e out/shell.o
+ .debug_info    0x0000000000000e92      0x637 out/my_string.o
+ .debug_info    0x00000000000014c9      0x1c6 out/exeception.o
+ .debug_info    0x000000000000168f       0x72 out/math_.o
+ .debug_info    0x0000000000001701      0x3d5 out/devicetree.o
+ .debug_info    0x0000000000001ad6      0x547 out/cpio.o
+ .debug_info    0x000000000000201d      0x1ee out/main.o
+ .debug_info    0x000000000000220b      0x17e out/malloc.o
+ .debug_info    0x0000000000002389       0xe2 out/reboot.o
 
-.debug_abbrev   0x0000000000000000     0x1197
+.debug_abbrev   0x0000000000000000     0x1039
  .debug_abbrev  0x0000000000000000       0x14 start.o
  .debug_abbrev  0x0000000000000014       0x14 exeception.o
- .debug_abbrev  0x0000000000000028      0x17e out/mailbox.o
- .debug_abbrev  0x00000000000001a6       0xb7 out/core_timer.o
- .debug_abbrev  0x000000000000025d      0x252 out/uart.o
- .debug_abbrev  0x00000000000004af       0xa9 out/irq.o
- .debug_abbrev  0x0000000000000558      0x257 out/shell.o
- .debug_abbrev  0x00000000000007af      0x194 out/my_string.o
- .debug_abbrev  0x0000000000000943       0x9c out/exeception.o
- .debug_abbrev  0x00000000000009df       0x66 out/math_.o
- .debug_abbrev  0x0000000000000a45      0x221 out/devicetree.o
- .debug_abbrev  0x0000000000000c66      0x24e out/cpio.o
- .debug_abbrev  0x0000000000000eb4      0x120 out/main.o
- .debug_abbrev  0x0000000000000fd4       0xaa out/malloc.o
- .debug_abbrev  0x000000000000107e      0x119 out/reboot.o
+ .debug_abbrev  0x0000000000000028      0x161 out/mailbox.o
+ .debug_abbrev  0x0000000000000189      0x14d out/core_timer.o
+ .debug_abbrev  0x00000000000002d6      0x1d1 out/uart.o
+ .debug_abbrev  0x00000000000004a7      0x149 out/irq.o
+ .debug_abbrev  0x00000000000005f0      0x1cd out/shell.o
+ .debug_abbrev  0x00000000000007bd      0x11e out/my_string.o
+ .debug_abbrev  0x00000000000008db      0x102 out/exeception.o
+ .debug_abbrev  0x00000000000009dd       0x4e out/math_.o
+ .debug_abbrev  0x0000000000000a2b      0x15a out/devicetree.o
+ .debug_abbrev  0x0000000000000b85      0x1c5 out/cpio.o
+ .debug_abbrev  0x0000000000000d4a      0x12e out/main.o
+ .debug_abbrev  0x0000000000000e78      0x115 out/malloc.o
+ .debug_abbrev  0x0000000000000f8d       0xac out/reboot.o
 
 .debug_aranges  0x0000000000000000      0x2d0
  .debug_aranges
@@ -370,59 +359,37 @@ LOAD linker stubs
  .debug_aranges
                 0x00000000000002a0       0x30 out/reboot.o
 
-.debug_str      0x0000000000000000      0x733
+.debug_str      0x0000000000000000      0x7ba
  .debug_str     0x0000000000000000       0x29 start.o
  .debug_str     0x0000000000000029        0xd exeception.o
                                          0x2e (size before relaxing)
- .debug_str     0x0000000000000036       0xd2 out/mailbox.o
-                                        0x10b (size before relaxing)
- .debug_str     0x0000000000000108       0x48 out/core_timer.o
-                                        0x102 (size before relaxing)
- .debug_str     0x0000000000000150      0x14f out/uart.o
-                                        0x217 (size before relaxing)
- .debug_str     0x000000000000029f       0x20 out/irq.o
-                                         0xe7 (size before relaxing)
- .debug_str     0x00000000000002bf       0x7d out/shell.o
-                                        0x1c8 (size before relaxing)
- .debug_str     0x000000000000033c       0xa8 out/my_string.o
-                                        0x1a3 (size before relaxing)
- .debug_str     0x00000000000003e4       0x66 out/exeception.o
-                                        0x120 (size before relaxing)
- .debug_str     0x000000000000044a        0xc out/math_.o
-                                         0x9d (size before relaxing)
- .debug_str     0x0000000000000456      0x151 out/devicetree.o
-                                        0x243 (size before relaxing)
- .debug_str     0x00000000000005a7      0x10b out/cpio.o
-                                        0x215 (size before relaxing)
- .debug_str     0x00000000000006b2       0x41 out/main.o
-                                        0x15c (size before relaxing)
- .debug_str     0x00000000000006f3        0xd out/malloc.o
-                                         0xcd (size before relaxing)
- .debug_str     0x0000000000000700       0x33 out/reboot.o
-                                         0xd6 (size before relaxing)
+ .debug_str     0x0000000000000036      0x120 out/mailbox.o
+                                        0x167 (size before relaxing)
+ .debug_str     0x0000000000000156       0x5d out/core_timer.o
+                                        0x181 (size before relaxing)
+ .debug_str     0x00000000000001b3      0x152 out/uart.o
+                                        0x271 (size before relaxing)
+ .debug_str     0x0000000000000305       0x47 out/irq.o
+                                        0x166 (size before relaxing)
+ .debug_str     0x000000000000034c       0x71 out/shell.o
+                                        0x195 (size before relaxing)
+ .debug_str     0x00000000000003bd       0xb3 out/my_string.o
+                                        0x1a5 (size before relaxing)
+ .debug_str     0x0000000000000470       0x66 out/exeception.o
+                                        0x19c (size before relaxing)
+ .debug_str     0x00000000000004d6       0x13 out/math_.o
+                                         0x99 (size before relaxing)
+ .debug_str     0x00000000000004e9      0x151 out/devicetree.o
+                                        0x2a3 (size before relaxing)
+ .debug_str     0x000000000000063a      0x10b out/cpio.o
+                                        0x25c (size before relaxing)
+ .debug_str     0x0000000000000745       0x27 out/main.o
+                                        0x168 (size before relaxing)
+ .debug_str     0x000000000000076c       0x1b out/malloc.o
+                                        0x132 (size before relaxing)
+ .debug_str     0x0000000000000787       0x33 out/reboot.o
+                                         0xd2 (size before relaxing)
 
-.debug_loc      0x0000000000000000     0x3d60
- .debug_loc     0x0000000000000000      0x235 out/mailbox.o
- .debug_loc     0x0000000000000235       0x62 out/core_timer.o
- .debug_loc     0x0000000000000297      0x284 out/uart.o
- .debug_loc     0x000000000000051b       0x8f out/irq.o
- .debug_loc     0x00000000000005aa      0x903 out/shell.o
- .debug_loc     0x0000000000000ead     0x177e out/my_string.o
- .debug_loc     0x000000000000262b       0x94 out/exeception.o
- .debug_loc     0x00000000000026bf       0x96 out/math_.o
- .debug_loc     0x0000000000002755      0x874 out/devicetree.o
- .debug_loc     0x0000000000002fc9      0x9e2 out/cpio.o
- .debug_loc     0x00000000000039ab       0xeb out/main.o
- .debug_loc     0x0000000000003a96       0x77 out/malloc.o
- .debug_loc     0x0000000000003b0d      0x253 out/reboot.o
-
-.debug_ranges   0x0000000000000000      0x900
- .debug_ranges  0x0000000000000000       0x40 out/mailbox.o
- .debug_ranges  0x0000000000000040       0xc0 out/uart.o
- .debug_ranges  0x0000000000000100       0x40 out/irq.o
- .debug_ranges  0x0000000000000140      0x100 out/shell.o
- .debug_ranges  0x0000000000000240      0x150 out/my_string.o
- .debug_ranges  0x0000000000000390      0x2a0 out/devicetree.o
- .debug_ranges  0x0000000000000630      0x1b0 out/cpio.o
- .debug_ranges  0x00000000000007e0       0x20 out/main.o
- .debug_ranges  0x0000000000000800      0x100 out/reboot.o
+.debug_ranges   0x0000000000000000       0xc0
+ .debug_ranges  0x0000000000000000       0x30 out/shell.o
+ .debug_ranges  0x0000000000000030       0x90 out/cpio.o
