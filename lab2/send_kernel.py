@@ -1,5 +1,5 @@
 from serial import Serial
-from pwn import p64
+from pwn import *
 import argparse
 import time
 
@@ -13,10 +13,14 @@ with open(args.filename,'rb') as fd:
   kernel_raw = fd.read()
   length = len(kernel_raw)
   print("Kernel image size : ", hex(length))
+  print(p32(length))
   with Serial(args.device, args.baud) as ser:
     for i in range(4):
-      ser.write(p64(length)[i:i+1])
+      ser.write(p32(length)[i:i+1])
+      a = p32(length)[i:i+1]
+      print(a)
       ser.flush()
+  
     print("Start sending kernel img by uart...")
     for i in range(length):
       ser.write(kernel_raw[i: i+1])

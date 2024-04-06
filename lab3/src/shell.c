@@ -1,5 +1,5 @@
 #include "shell.h"
-
+#define demo_async
 void shell() {
   do {
     char cmd[BUF_SIZE];
@@ -124,22 +124,44 @@ void do_(char *cmd) {
   } else if (!strcmp("timer_on", cmd)) {
     // core_timer_enable();
     // timer_on();
-    add_irq(&print_time_mes, "timer_on", 2, 0);
+    add_irq(&print_time_mes, "timer_on", 2, 1);
   } else if (!strcmp("async_test", cmd)) {
     uart_printf("please input a string\n");
     *IRQs1 |= AUX_INT;
+    enable_interrupt();
+/* demo */
+#ifdef demo_async
+    enable_uart_w_interrupt();
+    int count = 1000;
+    while (count) {
+      asm volatile("nop");
+      count--;
+    }
+#endif
+    /* demo */
     enable_uart_r_interrupt();
 
     while (1) {
       char ch = async_getc();
       // enable_uart_r_interrupt();
 
-      async_send(ch);
       if (ch == '\n') {
         async_send('\r');
+        async_send('\n');
         break;
       }
+      async_send(ch);
     }
+#ifdef demo_async
+    /* demo */
+    enable_uart_w_interrupt();
+    count = 1000;
+    while (count) {
+      asm volatile("nop");
+      count--;
+    }
+#endif
+    /* demo */
 
     disable_uart_w_interrupt();
     disable_uart_r_interrupt();
@@ -161,7 +183,7 @@ void do_(char *cmd) {
       seconds += (*ch - 48);
       ch++;
     }
-    add_irq(&print_time_mes, message, seconds, 0);
+    add_irq(&print_time_mes, message, seconds, 1);
   } else {
     uart_printf("shell: command not found: %s\n", cmd);
   }

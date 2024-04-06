@@ -20,14 +20,19 @@
     stp x26, x27, [sp ,16 * 13]
     stp x28, x29, [sp ,16 * 14]
     str x30, [sp, 16 * 15]
-    mrs x0, spsr_el1
-    mrs x1, elr_el1
-    stp x0,x1,[sp, 16 * 16];
+    mrs x20, elr_el1
+    mrs x21, spsr_el1
+    stp x20,x21,[sp, #16 * 16];
+    //stp elr_el1,spsr_el1,[sp, 16 * 16];
     // store spsr_el,elr_el1 to prevent the higher priority interrupt
 .endm
 
 // load general registers from stack
 .macro load_all
+    mrs x21, spsr_el1
+    ldp x20, x21, [sp ,16 * 16]
+    msr elr_el1, x20
+    msr spsr_el1, x21
     ldp x0, x1, [sp ,16 * 0]
     ldp x2, x3, [sp ,16 * 1]
     ldp x4, x5, [sp ,16 * 2]
@@ -44,9 +49,10 @@
     ldp x26, x27, [sp ,16 * 13]
     ldp x28, x29, [sp ,16 * 14]
     ldr x30, [sp, 16 * 15]
-    ldp x0, x1, [sp ,16 * 16]
-    msr spsr_el1, x0
-    msr elr_el1, x1
+    //ldp el1_el1, spsr_el1, [sp ,16 * 16]
+    //ldp x8, x9, [sp ,16 * 16]
+    //msr elr_el1, x8
+    //msr spsr_el1, x9
     add sp, sp, 32 * 9
     //add sp, sp, 32 * 8
 .endm

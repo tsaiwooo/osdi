@@ -26,14 +26,33 @@ unsigned int vsprintf(char *dst, char *fmt, __builtin_va_list args) {
           *dst++ = *p++;
         }
       }
+      // long
+      if (*fmt == 'l') {
+        fmt++;
+        if (*fmt == 'd') {
+          unsigned long long arg =
+              (unsigned long long)__builtin_va_arg(args, unsigned long long);
+          char buf[8 + 1];
+          char *p = itox(arg, buf);
+          while (*p) {
+            *dst++ = *p++;
+          }
+          // char *pH = itox(*(&arg + 1), buf);
+          // while (*pH) {
+          //   *dst++ = *pH++;
+          // }
+        }
+      }
       // hex
       if (*fmt == 'x') {
-        int arg = __builtin_va_arg(args, int);
+        // int arg = __builtin_va_arg(args, int);
+        unsigned long long arg = __builtin_va_arg(args, unsigned long long);
         char buf[8 + 1];
         char *p = itox(arg, buf);
         while (*p) {
           *dst++ = *p++;
         }
+        // *dst = '\0';
       }
       // float
       if (*fmt == 'f') {
@@ -119,7 +138,7 @@ int strcmp(const char *X, const char *Y) {
   return *(const unsigned char *)X - *(const unsigned char *)Y;
 }
 
-char *itox(int value, char *s) {
+char *itox(unsigned long long value, char *s) {
   int idx = 0;
 
   char tmp[8 + 1];

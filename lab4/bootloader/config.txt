@@ -1,0 +1,2 @@
+initramfs initramfs.cpio
+kerenl=bootloader.img

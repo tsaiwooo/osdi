@@ -4,7 +4,7 @@
 unsigned int vsprintf(char *, char *, __builtin_va_list);
 char *ftoa(float, char *);
 char *itoa(int, char *);
-char *itox(int, char *);
+char *itox(unsigned long long, char *);
 int strcmp(const char *, const char *);
 int strlen(const char *);
 char *strcpy(char *to, const char *from);

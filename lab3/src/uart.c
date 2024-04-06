@@ -1,4 +1,5 @@
 #include "uart.h"
+#define demo_async
 
 void uart_init() {
   register unsigned int r;
@@ -98,8 +99,14 @@ AUX_MU_IER
 0 : enable receive interrupts
 */
 
+#ifdef demo_async
+volatile char tx_buf[1024] = {"buffer\r\n"};
+// volatile unsigned int tx_write_idx = 10;
+volatile unsigned int tx_write_idx = 8;
+#else
 volatile char tx_buf[1024] = {};
 volatile unsigned int tx_write_idx = 0;
+#endif
 volatile unsigned int tx_read_idx = 0;
 volatile char rx_buf[1024] = {};
 volatile unsigned int rx_write_idx = 0;
@@ -109,49 +116,88 @@ void async_handler() {
   // write,send.
   *IRQ_disable1 |= AUX_INT;
   if (*AUX_MU_IIR & (0b01 << 1)) {
-    disable_uart_w_interrupt();
+    // disable_uart_w_interrupt();
 
-    if (tx_write_idx == tx_read_idx) {
-      *IRQs1 |= AUX_INT;
-      enable_uart_w_interrupt();
-      return;
-    }
+    // if (tx_write_idx == tx_read_idx) {
+    //   *IRQs1 |= AUX_INT;
+    //   enable_uart_w_interrupt();
+    //   return;
+    // }
 
-    *AUX_MU_IO = tx_buf[tx_read_idx++];
-    if (tx_read_idx >= MAX_BUF_SIZE) tx_read_idx = 0;  // cycle pointer
+    // *AUX_MU_IO = tx_buf[tx_read_idx++];
+    // if (tx_read_idx >= MAX_BUF_SIZE) tx_read_idx = 0;  // cycle pointer
+    // w_handler();
+    add_priority_queue(&w_handler, "w_handler", 2);
   }
   // read
   else if (*AUX_MU_IIR & (0b10 << 1)) {
-    disable_uart_r_interrupt();
-    // if ((rx_write_idx + 1) == rx_read_idx) {
-    //   *IRQs1 |= AUX_INT;
-    //   enable_uart_r_interrupt();
-    //   return;
-    // }
-    char ch = (char)(*AUX_MU_IO);
-    rx_buf[rx_write_idx++] = (ch == '\r') ? '\n' : ch;
-    if (rx_write_idx >= MAX_BUF_SIZE) rx_write_idx = 0;
-    enable_uart_r_interrupt();
+    // disable_uart_r_interrupt();
+    // // if ((rx_write_idx + 1) == rx_read_idx) {
+    // //   *IRQs1 |= AUX_INT;
+    // //   enable_uart_r_interrupt();
+    // //   return;
+    // // }
+    // char ch = (char)(*AUX_MU_IO);
+    // rx_buf[rx_write_idx++] = (ch == '\r') ? '\n' : ch;
+    // if (rx_write_idx >= MAX_BUF_SIZE) rx_write_idx = 0;
+    // enable_uart_r_interrupt();
+    // r_handler();
+    add_priority_queue(&r_handler, "r_handler", 2);
   }
   *IRQs1 |= AUX_INT;
 }
+int a = 0;
+void w_handler(char *args) {
+  disable_uart_w_interrupt();
+  // disable_interrupt();
+  // uart_printf("in w handler\n");
+#ifdef demo_advance2
+  while (a == 0) {
+    ;
+  }
+#endif
+  if (tx_write_idx == tx_read_idx) {
+    *IRQs1 |= AUX_INT;
+    enable_uart_w_interrupt();
+    return;
+  }
+  while (tx_read_idx < tx_write_idx) {
+    *AUX_MU_IO = tx_buf[tx_read_idx++];
+  }
+  if (tx_read_idx >= MAX_BUF_SIZE) tx_read_idx = 0;  // cycle pointer
+  enable_interrupt();
+}
 
+void r_handler(char *args) {
+  disable_uart_r_interrupt();
+  // uart_printf("r handler\n");
+  char ch = (char)(*AUX_MU_IO);
+  rx_buf[rx_write_idx++] = (ch == '\r') ? '\n' : ch;
+  if (rx_write_idx >= MAX_BUF_SIZE) rx_write_idx = 0;
+  enable_uart_r_interrupt();
+}
 // send is ok
 void async_send(char ch) {
+  disable_interrupt();
   tx_buf[tx_write_idx] = ch;
   tx_write_idx++;
   if (tx_write_idx >= MAX_BUF_SIZE) tx_write_idx = 0;
+  enable_interrupt();
+  // enable_uart_w_interrupt();
+#ifdef demo_advance2
   enable_uart_w_interrupt();
+#endif
 }
 
 char async_getc() {
+  // disable_interrupt();
   while (rx_read_idx == rx_write_idx) {
     asm volatile("nop");
   }
   char ch = rx_buf[rx_read_idx];
   rx_read_idx++;
   if (rx_read_idx >= MAX_BUF_SIZE) rx_read_idx = 0;
-
+  enable_interrupt();
   return ch;
 }
 

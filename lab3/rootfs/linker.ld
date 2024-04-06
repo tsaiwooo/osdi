@@ -1,6 +1,6 @@
 SECTIONS
 {
-    . = 0x80000;
+    . = 0x10000;
     .text : { KEEP(*(.text.boot)) *(.text) }
     .rodata : { *(.rodata) }
     PROVIDE(_data = .);
@@ -15,4 +15,3 @@ SECTIONS
     _end = .;
 
 }
-__bss_size = (__bss_end - __bss_start)>>3;

@@ -16,7 +16,7 @@ void main(char *dtb) {
 #endif
   // set up serial console
   uart_init();
-  enable_interrupt();
+  // enable_interrupt();
 
   fdt_traverse(dtb_callback_initramfs);
 

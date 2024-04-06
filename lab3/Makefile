@@ -43,6 +43,9 @@ asm:
 dir:
 	mkdir -p $(OUT_DIR)
 
+cpio:
+	cd rootfs && find . | cpio -o -H newc > ../initramfs.cpio
+
 # FOR DEBUG
 .PHONY: debug
 debug:
