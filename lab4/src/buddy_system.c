@@ -28,13 +28,14 @@ void *kmalloc(size_t size) {
   for (int i = 0; i <= MAX_ORDER; ++i) {
     uart_printf("%d order free number = %d\n", i, buddy.free_area[i].nr_free);
   }
-  if (size > (page_size * (1 << MAX_ORDER))) {
-    uart_printf("size is not enough\n");
+  // size < page size -> using dma
+  if (size <= (page_size / 2)) {
+    return DMA_malloc(size);
   }
+
   // find the fit order
   int order = 0;
   while ((page_size * (1 << order)) < size) {
-    // order *= 2;
     order++;
   }
 
@@ -93,12 +94,6 @@ void *kmalloc(size_t size) {
     page_array[cur->index].condition = ALLOCATED;
     page_array[cur->index].order = order;
     // uart_printf("in else %d order %d index\n", order, cur->index);
-    // find the free node index
-    // if(cur->index == cur->index){
-    //   buddy.free_area[order].list = buddy.free_area[order].list->next;
-    // }else{
-    // while(cur->index!=)
-    // }
     cur = cur->next;
     buddy.free_area[order].list = cur;
     uart_printf("after malloc, the free number of each lists = %d\n",
@@ -114,6 +109,10 @@ void *kmalloc(size_t size) {
 void kfree(char *address) {
   int cur_index = (address - buddy_start) / (page_size);
   int cur_order = page_array[cur_index].order;
+
+  if (page_array[cur_index].condition == DMA_ALLOCATE) {
+    DMA_free(address);
+  }
   page_array[cur_index].condition = FREE;
   // when free, add 1 in current order
   buddy.free_area[cur_order].nr_free++;
@@ -144,42 +143,42 @@ void kfree(char *address) {
       }
       break;
     } else {
-      // free nodes in current order--
-      buddy.free_area[cur_order].nr_free -= 2;
-      Node *cur = buddy.free_area[cur_order].list;
-      // delete free node in cur_order
-      // if head match, head = head->next
-      if (cur->index == buddy_index) {
-        buddy.free_area[cur_order].list = buddy.free_area[cur_order].list->next;
-      } else {
-        Node *pre;
-        // not head, then pre->next = cur->next
-        while (cur != NULL) {
-          if (cur->index == buddy_index) {
-            pre->next = cur->next;
-            break;
-          }
-          pre = cur;
-          cur = cur->next;
-        }
-      }
-      // dont add to next order, it may be merged in next order
-      // next order free nodes++, it's wrong, so don't add 1
-      // find merge, add to next
-      buddy.free_area[cur_order + 1].nr_free++;
-      // add new node to next order
-      Node *next_order_cur = buddy.free_area[cur_order + 1].list;
-      Node *next_tmp = simple_malloc(sizeof(Node));
-      next_tmp->index = cur_index;
-      next_tmp->next = NULL;
-      if (next_order_cur == NULL) {
-        buddy.free_area[cur_order + 1].list = next_tmp;
-      } else {
-        while (next_order_cur->next != NULL) {
-          next_order_cur = next_order_cur->next;
-        }
-        next_order_cur->next = next_tmp;
-      }
+      // free nodes in current order-=2,itself and its buddy
+      merge_page(cur_order, buddy_index, cur_index);
+      //   buddy.free_area[cur_order].nr_free -= 2;
+      //   Node *cur = buddy.free_area[cur_order].list;
+      //   // delete free node in cur_order
+      //   // if head match, head = head->next
+      //   if (cur->index == buddy_index) {
+      //     buddy.free_area[cur_order].list =
+      //     buddy.free_area[cur_order].list->next;
+      //   } else {
+      //     Node *pre;
+      //     // not head, then pre->next = cur->next
+      //     while (cur != NULL) {
+      //       if (cur->index == buddy_index) {
+      //         pre->next = cur->next;
+      //         break;
+      //       }
+      //       pre = cur;
+      //       cur = cur->next;
+      //     }
+      //   }
+      //   // find merge, add to next
+      //   buddy.free_area[cur_order + 1].nr_free++;
+      //   // add new node to next order
+      //   Node *next_order_cur = buddy.free_area[cur_order + 1].list;
+      //   Node *next_tmp = simple_malloc(sizeof(Node));
+      //   next_tmp->index = cur_index;
+      //   next_tmp->next = NULL;
+      //   if (next_order_cur == NULL) {
+      //     buddy.free_area[cur_order + 1].list = next_tmp;
+      //   } else {
+      //     while (next_order_cur->next != NULL) {
+      //       next_order_cur = next_order_cur->next;
+      //     }
+      //     next_order_cur->next = next_tmp;
+      //   }
     }
     cur_order++;
   }
@@ -189,12 +188,136 @@ void kfree(char *address) {
   }
 }
 
-// int match_freelist(int order, int buddy_index) {
-//   Node *cur = buddy.free_area[order].list;
-//   while (cur) {
-//     if (cur->index == buddy_index) {
-//       return 1;
-//     }
-//   }
-//   return 0;
-// }
+void init_DMA() {
+  char *addr = kmalloc(page_size);
+  DMA *cur = DMA_head;
+  DMA *DMA_tmp = simple_malloc(sizeof(DMA));
+  DMA_node *tmp = simple_malloc(sizeof(DMA_node));
+  DMA_node *tmp2 = simple_malloc(sizeof(DMA_node));
+  // record which page is allocated
+  DMA_tmp->page_index = (addr - buddy_start) / (page_size);
+  page_array[DMA_tmp->page_index].condition = DMA_ALLOCATE;
+  page_array[DMA_tmp->page_index].order = 0;
+  uart_printf("addr = %x, In DMA the page is %d\n", addr, DMA_tmp->page_index);
+  DMA_tmp->head[0].size = 16;
+  DMA_tmp->head[0].free_number = 2;
+  tmp->address = addr + 16 * 0;
+  tmp2->address = addr + 16 * 1;
+  tmp->next = tmp2;
+  tmp2->next = NULL;
+  DMA_tmp->head[0].head = tmp;
+  for (int i = 1; i < 8; ++i) {
+    tmp = (DMA_node *)simple_malloc(sizeof(DMA_node));
+    DMA_tmp->next = NULL;
+    DMA_tmp->head[i].free_number = 1;
+    tmp->address = addr + (1 << (i + 4));
+    tmp->next = NULL;
+    DMA_tmp->head[i].head = tmp;
+    DMA_tmp->head[i].size = (1 << (i + 4));
+  }
+  if (!DMA_head) {
+    DMA_head = DMA_tmp;
+  } else {
+    while (cur->next != NULL) {
+      cur = cur->next;
+    }
+    cur->next = DMA_tmp;
+  }
+}
+
+int DMA_order_funct(int size) {
+  int nearest_order = 0;
+  for (nearest_order; (1 << nearest_order) < size; nearest_order++) {
+    ;
+  }
+  if (nearest_order < 4) return 0;
+  return nearest_order - 4;
+}
+
+void *DMA_malloc(int size) {
+  const int DMA_order = DMA_order_funct(size);
+  int DMA_order_tmp = DMA_order;
+  //   uart_printf("DMA_order = %d\n", DMA_order);
+  DMA *cur = DMA_head;
+  // find the free space over every node in each page
+  while (cur->head[DMA_order].free_number == 0 && cur != NULL) {
+    DMA_order_tmp++;
+    if (DMA_order_tmp > 7) {
+      cur = cur->next;
+      DMA_order_tmp = DMA_order;
+    }
+  }
+  // represents the free spcae is not enough, so allocate a new page for it, and
+  // find this page in the list
+  if (!cur) {
+    init_DMA();
+    // cur = cur->next;
+    cur = DMA_head;
+    while (cur->next) {
+      cur = cur->next;
+    }
+  }
+  cur->head[DMA_order_tmp].free_number--;
+  char *addr = cur->head[DMA_order_tmp].head->address;
+  cur->head[DMA_order_tmp].head = cur->head[DMA_order_tmp].head->next;
+  //   uart_printf("%d order, at address %x\n", DMA_order_tmp, addr);
+  return (void *)addr;
+}
+
+void DMA_free(char *addr) {
+  int cur_index = (addr - buddy_start) / (page_size);
+  int DMA_order = DMA_order_funct((addr - buddy_start));
+  DMA *cur = DMA_head;
+
+  while (cur->page_index != cur_index && cur) {
+    cur = cur->next;
+  }
+  // the address doesn't exist
+  if (!cur) return;
+  DMA_node *tmp = simple_malloc(sizeof(DMA_node));
+  tmp->address = addr;
+  tmp->next = NULL;
+  cur->head[DMA_order].free_number++;
+  DMA_node *cur_node = cur->head[DMA_order].head;
+  if (!cur_node) {
+    cur->head[DMA_order].head = tmp;
+  } else {
+    cur->head[DMA_order].head->next = tmp;
+  }
+}
+
+void merge_page(int cur_order, int buddy_index, int cur_index) {
+  buddy.free_area[cur_order].nr_free -= 2;
+  Node *cur = buddy.free_area[cur_order].list;
+  // delete free node in cur_order
+  // if head match, head = head->next
+  if (cur->index == buddy_index) {
+    buddy.free_area[cur_order].list = buddy.free_area[cur_order].list->next;
+  } else {
+    Node *pre;
+    // not head, then pre->next = cur->next
+    while (cur != NULL) {
+      if (cur->index == buddy_index) {
+        pre->next = cur->next;
+        break;
+      }
+      pre = cur;
+      cur = cur->next;
+    }
+  }
+  // find merge, add to next
+  buddy.free_area[cur_order + 1].nr_free++;
+  // add new node to next order
+  Node *next_order_cur = buddy.free_area[cur_order + 1].list;
+  Node *next_tmp = simple_malloc(sizeof(Node));
+  next_tmp->index = cur_index;
+  next_tmp->next = NULL;
+  if (next_order_cur == NULL) {
+    buddy.free_area[cur_order + 1].list = next_tmp;
+  } else {
+    while (next_order_cur->next != NULL) {
+      next_order_cur = next_order_cur->next;
+    }
+    next_order_cur->next = next_tmp;
+  }
+}
