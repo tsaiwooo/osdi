@@ -1,5 +1,5 @@
 #include "uart.h"
-#define demo_async
+#define demo_advance2
 
 void uart_init() {
   register unsigned int r;
@@ -100,17 +100,17 @@ AUX_MU_IER
 */
 
 #ifdef demo_async
-volatile char tx_buf[1024] = {"buffer\r\n"};
-// volatile unsigned int tx_write_idx = 10;
-volatile unsigned int tx_write_idx = 8;
+char tx_buf[1024] = {"buffer aaaaaaaaaaaa\r\n"};
+unsigned int tx_write_idx = 21;
+// unsigned int tx_write_idx = 8;
 #else
-volatile char tx_buf[1024] = {};
-volatile unsigned int tx_write_idx = 0;
+char tx_buf[1024] = {};
+unsigned int tx_write_idx = 0;
 #endif
-volatile unsigned int tx_read_idx = 0;
-volatile char rx_buf[1024] = {};
-volatile unsigned int rx_write_idx = 0;
-volatile unsigned int rx_read_idx = 0;
+unsigned int tx_read_idx = 0;
+char rx_buf[1024] = {};
+unsigned int rx_write_idx = 0;
+unsigned int rx_read_idx = 0;
 
 void async_handler() {
   // write,send.
@@ -144,6 +144,9 @@ void async_handler() {
     // r_handler();
     add_priority_queue(&r_handler, "r_handler", 2);
   }
+#ifdef demo_advance2_nonpreempt
+  *IRQ_disable1 |= AUX_INT;
+#endif
   *IRQs1 |= AUX_INT;
 }
 int a = 0;
@@ -162,7 +165,12 @@ void w_handler(char *args) {
     return;
   }
   while (tx_read_idx < tx_write_idx) {
+    int times = 100;
     *AUX_MU_IO = tx_buf[tx_read_idx++];
+    while (times) {
+      asm volatile("nop");
+      times--;
+    }
   }
   if (tx_read_idx >= MAX_BUF_SIZE) tx_read_idx = 0;  // cycle pointer
   enable_interrupt();
@@ -173,7 +181,7 @@ void r_handler(char *args) {
   // uart_printf("r handler\n");
   char ch = (char)(*AUX_MU_IO);
   rx_buf[rx_write_idx++] = (ch == '\r') ? '\n' : ch;
-  if (rx_write_idx >= MAX_BUF_SIZE) rx_write_idx = 0;
+  // if (rx_write_idx >= MAX_BUF_SIZE) rx_write_idx = 0;
   enable_uart_r_interrupt();
 }
 // send is ok
@@ -208,3 +216,10 @@ void disable_uart_r_interrupt() { *AUX_MU_IER &= ~(1); }
 void enable_uart_w_interrupt() { *AUX_MU_IER |= (2); }
 
 void disable_uart_w_interrupt() { *AUX_MU_IER &= ~(2); }
+
+void printf_r() {
+  for (int i = 0; i < tx_write_idx; ++i) {
+    uart_send(tx_buf[i]);
+  }
+  tx_write_idx = 0;
+}

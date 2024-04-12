@@ -41,4 +41,5 @@ void async_send(char);
 char async_getc();
 void w_handler(char *);
 void r_handler(char *);
+void printf_r();
 #endif  // _UART_H_

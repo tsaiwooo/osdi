@@ -5,6 +5,7 @@ uint32_t uint32_endian_big2lttle(uint32_t data) {
   return (r[3] << 0) | (r[2] << 8) | (r[1] << 16) | (r[0] << 24);
 }
 
+unsigned long dtb_len = 0;
 void fdt_traverse(dtb_callback callback) {
   fdt_header *header = (fdt_header *)dtb_place;
   if (uint32_endian_big2lttle(header->magic) != 0xD00DFEED) {
@@ -13,6 +14,8 @@ void fdt_traverse(dtb_callback callback) {
   }
 
   uint32_t struct_size = uint32_endian_big2lttle(header->size_dt_struct);
+  // memory reserve use
+  dtb_len += struct_size;
   char *dt_struct_ptr =
       (char *)((char *)header + uint32_endian_big2lttle(header->off_dt_struct));
   char *dt_strings_ptr = (char *)((char *)header + uint32_endian_big2lttle(
@@ -63,6 +66,10 @@ void dtb_callback_initramfs(uint32_t node_type, char *name, void *value,
                             uint32_t name_size) {
   if (node_type == FDT_PROP && !strcmp(name, "linux,initrd-start")) {
     CPIO_DEFAULT_PLACE =
+        (void *)(unsigned long long)uint32_endian_big2lttle(*(uint32_t *)value);
+  }
+  if (node_type == FDT_PROP && !strcmp(name, "linux,initrd-end")) {
+    CPIO_DEFAULT_PLACE_END =
         (void *)(unsigned long long)uint32_endian_big2lttle(*(uint32_t *)value);
   }
 }

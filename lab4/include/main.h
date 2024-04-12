@@ -7,7 +7,9 @@
 #include "irq.h"
 #include "mailbox.h"
 #include "malloc.h"
+#include "reserve_memory.h"
 #include "shell.h"
 #include "uart.h"
+
 extern char *dtb_place;
 #endif  // _MAIN_H_

@@ -9,6 +9,7 @@
     "main.h": "c",
     "core_timer.h": "c",
     "gpio.h": "c",
-    "exception.h": "c"
+    "exception.h": "c",
+    "irq.h": "c"
   }
 }

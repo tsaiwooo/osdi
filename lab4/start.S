@@ -22,6 +22,7 @@ _start:
     msr     vbar_el1, x1    
 
     // set top of stack just before our code (stack grows to a lower address per AAPCS64)
+    // ldr     x1, =_start
     ldr     x1, =_start
     mov     sp, x1
 

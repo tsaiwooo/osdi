@@ -15,14 +15,17 @@ SECTIONS
     /* _heap_start = . + 0x20000; */
     /* _heap_start = 0x100000; */
     _end = .;
-
+ 
    /DISCARD/ : { *(.comment) *(.gnu*) *(.note*) *(.eh_frame*) }
 }
-__bss_size = (__bss_end - __bss_start)>>3;
-_heap_start = 0x100000;
 
-_buddy_start = 0x3000000;
-_buddy_end = 0x3020000;
-/* 128KB size */
-/* split to 32 pages */
-_buddy_size = (_buddy_end - _buddy_start) >> 12;
+__bss_size = (__bss_end - __bss_start)>>3;
+_heap_start = 0x200000;
+_heap_end = 0x400000;
+/* for mem reserve use*/
+_spin_table_start = 0x0;
+_spin_table_end = 0x1000;
+_buddy_start = 0x0;
+_buddy_end = 0x3C000000;
+_kernel_start = 0x60000;
+_kernel_end = _end;

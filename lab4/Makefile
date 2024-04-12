@@ -2,7 +2,7 @@ SRC_DIR = src
 OUT_DIR = out
 SRCS = $(wildcard $(SRC_DIR)/*.c)
 OBJS = $(SRCS:$(SRC_DIR)/%.c=$(OUT_DIR)/%.o)
-CFLAGS = -g -Wall  -ffreestanding -nostdinc -nostdlib -nostartfiles -I include
+CFLAGS = -g -Wall  -O0 -ffreestanding -nostdinc -nostdlib -nostartfiles -I include
 PREFIX = aarch64-linux-gnu-
 CC = $(PREFIX)gcc
 LD = $(PREFIX)ld

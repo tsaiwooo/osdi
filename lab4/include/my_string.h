@@ -13,4 +13,5 @@ char *strncpy(char *to, const char *from, unsigned long size);
 // align 'n' up to the value 'align', which must be a power of two
 unsigned long align_up(unsigned long n, unsigned long align);
 char *memcpy(void *dest, const void *src, unsigned long long len);
+long hextol(char *);
 #endif  // _MY_STRING_H_

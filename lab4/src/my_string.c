@@ -26,6 +26,18 @@ unsigned int vsprintf(char *dst, char *fmt, __builtin_va_list args) {
           *dst++ = *p++;
         }
       }
+      // long
+      if (*fmt == 'l') {
+        fmt++;
+        if (*fmt == 'd') {
+          long long arg = __builtin_va_arg(args, long long);
+          char buf[17];
+          char *p = itoa(arg, buf);
+          while (*p) {
+            *dst++ = *p++;
+          }
+        }
+      }
       // hex
       if (*fmt == 'x') {
         int arg = __builtin_va_arg(args, int);
@@ -200,4 +212,23 @@ char *memcpy(void *dest, const void *src, unsigned long long len) {
   const char *s = src;
   while (len--) *d++ = *s++;
   return dest;
+}
+
+long hextol(char *s) {
+  unsigned long i, r = 0;
+
+  // for (i = 0; s[i] != '\0'; i++) {
+  for (i = 0; i < strlen(s); i++) {
+    r *= 16;
+    if (s[i] >= '0' && s[i] <= '9') {
+      r += s[i] - '0';
+    } else if (s[i] >= 'a' && s[i] <= 'f') {
+      r += s[i] - 'a' + 10;
+    } else if (s[i] >= 'A' && s[i] <= 'F') {
+      r += s[i] - 'A' + 10;
+    } else {
+      return r;
+    }
+  }
+  return r;
 }

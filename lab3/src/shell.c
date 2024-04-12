@@ -1,5 +1,5 @@
 #include "shell.h"
-#define demo_async
+#define demo_advance2
 void shell() {
   do {
     char cmd[BUF_SIZE];

@@ -4,14 +4,16 @@
 #include "uart.h"
 #define size_t unsigned long
 #define NULL 0
-#define MAX_ORDER 5
+#define MAX_ORDER 15
 #define KB 1024
-#define page_size 4 * KB
-#define total_pages 128 * KB / page_size
+#define page_size 4096
+#define range 0x3C000000
+#define total_pages range / page_size
 #define ALLOCATED 10
 #define TOO_LARGE 11
 #define FREE 12
 #define DMA_ALLOCATE 13
+#define RESERVE_MEMORY 14
 // define in linker script
 extern char _buddy_start;
 extern char _buddy_end;
@@ -27,7 +29,7 @@ struct Node {
 
 typedef struct {
   Node *list;
-  unsigned long nr_free;
+  unsigned int nr_free;
   unsigned int order;
 } free_area;
 
@@ -35,12 +37,18 @@ typedef struct {
   free_area free_area[MAX_ORDER + 1];
 } buddy_zone;
 
-typedef struct {
-  int order;
-  int condition;
-} frame;
-frame page_array[total_pages];
+typedef struct frame frame;
+struct frame {
+  int index;
+  short order;
+  short condition;
+  frame *next;
+};
 buddy_zone buddy;
+// 245760 pages, 1000 pages in one array
+// record which page is used
+frame *frame_array;
+// frame *page_array[250];
 /* buddy system data stucture */
 
 /* DMA data stucture */
@@ -75,5 +83,10 @@ int DMA_order_funct(int);
 void *DMA_malloc(int);
 void DMA_free(char *);
 void merge_page(int cur_order, int buddy_index, int cur_index);
-
+// void insert_page_in_frame_list(int order, int condition, int index);
+// frame *find_page_in_frame_list(int index);
+int find_page_in_freelists(int order, int index);
+void delete_page_in_freelists(int order, int index);
+// void delete_page_in_frame_list(int index);
+void switch_status_page_in_frame_list(int order, int index, int status);
 #endif  // _BUDDY_STSTEM_

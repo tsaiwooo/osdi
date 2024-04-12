@@ -1,5 +1,10 @@
 {
   "files.associations": {
-    "buddy_system.h": "c"
+    "buddy_system.h": "c",
+    "shell.h": "c",
+    "uart.h": "c",
+    "reserve_memory.h": "c",
+    "my_string.h": "c",
+    "core_timer.h": "c"
   }
 }

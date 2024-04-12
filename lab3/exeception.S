@@ -22,7 +22,7 @@
     str x30, [sp, 16 * 15]
     mrs x20, elr_el1
     mrs x21, spsr_el1
-    stp x20,x21,[sp, #16 * 16];
+    stp x20,x21,[sp, 16 * 16];
     //stp elr_el1,spsr_el1,[sp, 16 * 16];
     // store spsr_el,elr_el1 to prevent the higher priority interrupt
 .endm

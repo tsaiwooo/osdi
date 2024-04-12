@@ -1,7 +1,9 @@
 #include "main.h"
 // define if using bootloader, dtb address will change
-#define LOCAL
-
+// #define LOCAL
+#define bootloader
+#define kmalloc_demo
+#define dma_demo
 void main(char *dtb) {
 // bootloader 把 dtb place先存在r15
 // 如果用這行，傳過去會卡住
@@ -51,24 +53,40 @@ void main(char *dtb) {
   //     : [data] "r"(shell), [stack_ptr] "r"(0x10000));
   // range in 0~20000
   init_buddy();
+  mem_zone_reserve();
+  uart_printf(
+      "=======================mem reserve done========================\n");
+#ifdef kmalloc_demo
+  int size = 7 * KB;
+  char *addr = kmalloc(64 * KB);
+  uart_printf("kmalloc start addr = %x\n", addr - &_buddy_start);
+  char *addr2 = kmalloc(size);
+  uart_printf("kmalloc start addr = %x\n", addr2 - &_buddy_start);
+  char *addr3 = kmalloc(32 * KB);
+  uart_printf("kmalloc start addr = %x\n", addr3 - &_buddy_start);
+  char *addr4 = kmalloc(8 * KB);
+  uart_printf("kmalloc start addr = %x\n", addr4 - &_buddy_start);
+  uart_printf(
+      "=========================== now kfree start "
+      "===================================\n");
+  uart_printf("kfree 8KB\n");
+  kfree(addr4);
+  uart_printf("kfree 32KB\n");
+  kfree(addr3);
+  uart_printf("kfree 7KB\n");
+  kfree(addr2);
+  addr2 = (char *)kmalloc(size);
+  uart_printf("kmalloc start addr = %x\n", addr2 - &_buddy_start);
+  uart_printf("kfree 64KB\n");
+  kfree(addr);
+  uart_printf("kfree 7KB\n");
+  kfree(addr2);
+  uart_printf(
+      "==============================================kfree "
+      "done=====================================\n");
+#endif
+#ifdef dma_demo
   init_DMA();
-  // int size = 7 * KB;
-  // char *addr = kmalloc(64 * KB);
-  // uart_printf("kmalloc start addr = %x\n", addr - &_buddy_start);
-  // char *addr2 = kmalloc(size);
-  // uart_printf("kmalloc start addr = %x\n", addr2 - &_buddy_start);
-  // char *addr3 = kmalloc(32 * KB);
-  // uart_printf("kmalloc start addr = %x\n", addr3 - &_buddy_start);
-  // char *addr4 = kmalloc(8 * KB);
-  // uart_printf("kmalloc start addr = %x\n", addr4 - &_buddy_start);
-  // uart_printf("size = %x\n", &_buddy_end - &_buddy_start);
-  // kfree(addr4);
-  // kfree(addr3);
-  // kfree(addr2);
-  // *addr2 = kmalloc(size);
-  // uart_printf("kmalloc start addr = %x\n", addr2 - &_buddy_start);
-  // kfree(addr);
-  // kfree(addr2);
   char *DMA_malloc = kmalloc(2000);
   uart_printf("15 address = %x\n", DMA_malloc - &_buddy_start);
   char *DMA_malloc1 = kmalloc(513);
@@ -78,6 +96,9 @@ void main(char *dtb) {
   kfree(DMA_malloc2);
   char *DMA_malloc3 = kmalloc(522);
   uart_printf("522 address = %x\n", DMA_malloc3 - &_buddy_start);
-  uart_printf("%d\n", 0x3c000000 / 0x1000);
+  uart_printf(
+      "===================================================DMA "
+      "done===============================\n");
+#endif
   shell();
 }
