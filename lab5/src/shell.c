@@ -1,6 +1,5 @@
 #include "shell.h"
-// #define demo_advance2
-#define demo_async
+
 void shell() {
   do {
     char cmd[BUF_SIZE];
@@ -130,39 +129,18 @@ void do_(char *cmd) {
     uart_printf("please input a string\n");
     *IRQs1 |= AUX_INT;
     enable_interrupt();
-/* demo */
-#ifdef demo_async
-    enable_uart_w_interrupt();
-    int count = 1000;
-    while (count) {
-      asm volatile("nop");
-      count--;
-    }
-#endif
-    /* demo */
     enable_uart_r_interrupt();
 
     while (1) {
       char ch = async_getc();
       // enable_uart_r_interrupt();
 
+      async_send(ch);
       if (ch == '\n') {
         async_send('\r');
-        async_send('\n');
         break;
       }
-      async_send(ch);
     }
-#ifdef demo_async
-    /* demo */
-    enable_uart_w_interrupt();
-    count = 1000;
-    while (count) {
-      asm volatile("nop");
-      count--;
-    }
-#endif
-    /* demo */
 
     disable_uart_w_interrupt();
     disable_uart_r_interrupt();
