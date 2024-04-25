@@ -15,6 +15,6 @@ extern void *CPIO_DEFAULT_PLACE;
 void *CPIO_DEFAULT_PLACE_END;
 extern char *dtb_place;
 extern unsigned long dtb_len;
-void memory_reserve(char *start, char *end);
+void memory_reserve(unsigned long start, unsigned long end);
 void mem_zone_reserve();
 #endif  // __RESERVE_MEMORY_H_

@@ -21,7 +21,7 @@ SECTIONS
 
 __bss_size = (__bss_end - __bss_start)>>3;
 _heap_start = 0x200000;
-_heap_end = 0x400000;
+_heap_end = 0x1000000; /* 400000 -> 1000000 */
 /* for mem reserve use*/
 _spin_table_start = 0x0;
 _spin_table_end = 0x1000;

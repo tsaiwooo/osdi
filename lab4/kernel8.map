@@ -9,7 +9,7 @@ task_queue          0x8               out/mailbox.o
 queue_head          0x8               out/mailbox.o
 DMA_head            0x8               out/reserve_memory.o
 dtb_place           0x8               out/devicetree.o
-buddy               0x100             out/reserve_memory.o
+buddy               0xf0              out/reserve_memory.o
 CPIO_DEFAULT_PLACE_END
                     0x8               out/reserve_memory.o
 frame_array         0x8               out/reserve_memory.o
@@ -103,7 +103,7 @@ LOAD out/reboot.o
 LOAD out/buddy_system.o
                 0x0000000000080000                . = 0x80000
 
-.text           0x0000000000080000     0x60f0
+.text           0x0000000000080000     0x637c
  *(.text.boot)
  .text.boot     0x0000000000080000       0xa0 start.o
                 0x0000000000080000                _start
@@ -173,182 +173,182 @@ LOAD out/buddy_system.o
                 0x0000000000083fcc                uint32_endian_big2lttle
                 0x000000000008402c                fdt_traverse
                 0x000000000008427c                dtb_callback_initramfs
- .text          0x0000000000084328      0x3ac out/reserve_memory.o
+ .text          0x0000000000084328      0x474 out/reserve_memory.o
                 0x0000000000084328                memory_reserve
-                0x00000000000845dc                mem_zone_reserve
- .text          0x00000000000846d4      0x500 out/cpio.o
-                0x00000000000846d4                parse_hex
-                0x0000000000084830                cpio_parse_header
-                0x000000000008495c                ls
-                0x00000000000849e4                cat
-                0x0000000000084ab4                exec
-                0x0000000000084b44                exec_file
- .text          0x0000000000084bd4      0x330 out/main.o
-                0x0000000000084bd4                main
- .text          0x0000000000084f04       0x54 out/malloc.o
-                0x0000000000084f04                simple_malloc
- .text          0x0000000000084f58       0xa8 out/reboot.o
-                0x0000000000084f58                set
-                0x0000000000084f84                reset
-                0x0000000000084fcc                cancel_reset
- .text          0x0000000000085000     0x10f0 out/buddy_system.o
-                0x0000000000085000                init_buddy
-                0x00000000000851c0                kmalloc
-                0x0000000000085684                kfree
-                0x000000000008592c                init_DMA
-                0x0000000000085b60                DMA_order_funct
-                0x0000000000085bbc                DMA_malloc
-                0x0000000000085d04                DMA_free
-                0x0000000000085e58                merge_page
-                0x0000000000085f5c                find_page_in_freelists
-                0x0000000000085fc8                delete_page_in_freelists
-                0x000000000008608c                switch_status_page_in_frame_list
+                0x00000000000846d8                mem_zone_reserve
+ .text          0x000000000008479c      0x500 out/cpio.o
+                0x000000000008479c                parse_hex
+                0x00000000000848f8                cpio_parse_header
+                0x0000000000084a24                ls
+                0x0000000000084aac                cat
+                0x0000000000084b7c                exec
+                0x0000000000084c0c                exec_file
+ .text          0x0000000000084c9c      0x324 out/main.o
+                0x0000000000084c9c                main
+ .text          0x0000000000084fc0       0x54 out/malloc.o
+                0x0000000000084fc0                simple_malloc
+ .text          0x0000000000085014       0xa8 out/reboot.o
+                0x0000000000085014                set
+                0x0000000000085040                reset
+                0x0000000000085088                cancel_reset
+ .text          0x00000000000850bc     0x12c0 out/buddy_system.o
+                0x00000000000850bc                init_buddy
+                0x000000000008534c                kmalloc
+                0x00000000000857d8                kfree
+                0x0000000000085a10                init_DMA
+                0x0000000000085c50                DMA_order_funct
+                0x0000000000085cac                DMA_malloc
+                0x0000000000085df4                DMA_free
+                0x0000000000085f48                merge_page
+                0x00000000000860a0                delete_page_in_freelists
+                0x000000000008620c                switch_status_page_in_frame_list
+                0x0000000000086288                print_log
 
-.iplt           0x00000000000860f0        0x0
- .iplt          0x00000000000860f0        0x0 start.o
+.iplt           0x000000000008637c        0x0
+ .iplt          0x000000000008637c        0x0 start.o
 
-.rodata         0x00000000000860f0      0x9da
+.rodata         0x0000000000086380      0x9ca
  *(.rodata)
- .rodata        0x00000000000860f0       0x71 out/mailbox.o
- *fill*         0x0000000000086161        0x7 
- .rodata        0x0000000000086168        0x9 out/core_timer.o
- *fill*         0x0000000000086171        0x7 
- .rodata        0x0000000000086178       0x3b out/uart.o
- *fill*         0x00000000000861b3        0x5 
- .rodata        0x00000000000861b8       0xac out/irq.o
- *fill*         0x0000000000086264        0x4 
- .rodata        0x0000000000086268      0x2ce out/shell.o
- *fill*         0x0000000000086536        0x2 
- .rodata        0x0000000000086538       0x50 out/exeception.o
- .rodata        0x0000000000086588       0x61 out/devicetree.o
- *fill*         0x00000000000865e9        0x7 
- .rodata        0x00000000000865f0       0xa3 out/reserve_memory.o
- *fill*         0x0000000000086693        0x5 
- .rodata        0x0000000000086698       0x48 out/cpio.o
- .rodata        0x00000000000866e0      0x284 out/main.o
- *fill*         0x0000000000086964        0x4 
- .rodata        0x0000000000086968      0x162 out/buddy_system.o
+ .rodata        0x0000000000086380       0x71 out/mailbox.o
+ *fill*         0x00000000000863f1        0x7 
+ .rodata        0x00000000000863f8        0x9 out/core_timer.o
+ *fill*         0x0000000000086401        0x7 
+ .rodata        0x0000000000086408       0x3b out/uart.o
+ *fill*         0x0000000000086443        0x5 
+ .rodata        0x0000000000086448       0xac out/irq.o
+ *fill*         0x00000000000864f4        0x4 
+ .rodata        0x00000000000864f8      0x2ce out/shell.o
+ *fill*         0x00000000000867c6        0x2 
+ .rodata        0x00000000000867c8       0x50 out/exeception.o
+ .rodata        0x0000000000086818       0x61 out/devicetree.o
+ *fill*         0x0000000000086879        0x7 
+ .rodata        0x0000000000086880       0x62 out/reserve_memory.o
+ *fill*         0x00000000000868e2        0x6 
+ .rodata        0x00000000000868e8       0x48 out/cpio.o
+ .rodata        0x0000000000086930      0x2a4 out/main.o
+ *fill*         0x0000000000086bd4        0x4 
+ .rodata        0x0000000000086bd8      0x172 out/buddy_system.o
                 [!provide]                        PROVIDE (_data = .)
 
-.rela.dyn       0x0000000000086ad0        0x0
- .rela.iplt     0x0000000000086ad0        0x0 start.o
+.rela.dyn       0x0000000000086d50        0x0
+ .rela.iplt     0x0000000000086d50        0x0 start.o
  .rela.text.boot
-                0x0000000000086ad0        0x0 start.o
- .rela.got      0x0000000000086ad0        0x0 start.o
+                0x0000000000086d50        0x0 start.o
+ .rela.got      0x0000000000086d50        0x0 start.o
  .rela.data.rel
-                0x0000000000086ad0        0x0 start.o
+                0x0000000000086d50        0x0 start.o
 
-.data           0x0000000000086acc        0x4
+.data           0x0000000000086d4c        0x4
  *(.data)
- .data          0x0000000000086acc        0x0 start.o
- .data          0x0000000000086acc        0x0 exeception.o
- .data          0x0000000000086acc        0x0 out/mailbox.o
- .data          0x0000000000086acc        0x0 out/core_timer.o
- .data          0x0000000000086acc        0x0 out/uart.o
- .data          0x0000000000086acc        0x4 out/irq.o
-                0x0000000000086acc                cur_nv
- .data          0x0000000000086ad0        0x0 out/shell.o
- .data          0x0000000000086ad0        0x0 out/my_string.o
- .data          0x0000000000086ad0        0x0 out/exeception.o
- .data          0x0000000000086ad0        0x0 out/math_.o
- .data          0x0000000000086ad0        0x0 out/devicetree.o
- .data          0x0000000000086ad0        0x0 out/reserve_memory.o
- .data          0x0000000000086ad0        0x0 out/cpio.o
- .data          0x0000000000086ad0        0x0 out/main.o
- .data          0x0000000000086ad0        0x0 out/malloc.o
- .data          0x0000000000086ad0        0x0 out/reboot.o
- .data          0x0000000000086ad0        0x0 out/buddy_system.o
+ .data          0x0000000000086d4c        0x0 start.o
+ .data          0x0000000000086d4c        0x0 exeception.o
+ .data          0x0000000000086d4c        0x0 out/mailbox.o
+ .data          0x0000000000086d4c        0x0 out/core_timer.o
+ .data          0x0000000000086d4c        0x0 out/uart.o
+ .data          0x0000000000086d4c        0x4 out/irq.o
+                0x0000000000086d4c                cur_nv
+ .data          0x0000000000086d50        0x0 out/shell.o
+ .data          0x0000000000086d50        0x0 out/my_string.o
+ .data          0x0000000000086d50        0x0 out/exeception.o
+ .data          0x0000000000086d50        0x0 out/math_.o
+ .data          0x0000000000086d50        0x0 out/devicetree.o
+ .data          0x0000000000086d50        0x0 out/reserve_memory.o
+ .data          0x0000000000086d50        0x0 out/cpio.o
+ .data          0x0000000000086d50        0x0 out/main.o
+ .data          0x0000000000086d50        0x0 out/malloc.o
+ .data          0x0000000000086d50        0x0 out/reboot.o
+ .data          0x0000000000086d50        0x0 out/buddy_system.o
 
-.igot.plt       0x0000000000086ad0        0x0
- .igot.plt      0x0000000000086ad0        0x0 start.o
+.igot.plt       0x0000000000086d50        0x0
+ .igot.plt      0x0000000000086d50        0x0 start.o
 
-.got            0x0000000000086ad0       0x80
- .got           0x0000000000086ad0       0x80 start.o
-                0x0000000000086ad0                _GLOBAL_OFFSET_TABLE_
+.got            0x0000000000086d50       0x80
+ .got           0x0000000000086d50       0x80 start.o
+                0x0000000000086d50                _GLOBAL_OFFSET_TABLE_
 
-.got.plt        0x0000000000086b50       0x18
- .got.plt       0x0000000000086b50       0x18 start.o
+.got.plt        0x0000000000086dd0       0x18
+ .got.plt       0x0000000000086dd0       0x18 start.o
 
-.data.rel       0x0000000000086b68       0x48
- .data.rel      0x0000000000086b68       0x30 out/reserve_memory.o
-                0x0000000000086b68                spin_start
-                0x0000000000086b70                spin_end
-                0x0000000000086b78                heap_start
-                0x0000000000086b80                heap_end
-                0x0000000000086b88                kernel_start
-                0x0000000000086b90                kernel_end
- .data.rel      0x0000000000086b98        0x8 out/malloc.o
-                0x0000000000086b98                top
- .data.rel      0x0000000000086ba0       0x10 out/buddy_system.o
-                0x0000000000086ba0                buddy_start
-                0x0000000000086ba8                buddy_end
+.data.rel       0x0000000000086de8       0x48
+ .data.rel      0x0000000000086de8       0x30 out/reserve_memory.o
+                0x0000000000086de8                spin_start
+                0x0000000000086df0                spin_end
+                0x0000000000086df8                heap_start
+                0x0000000000086e00                heap_end
+                0x0000000000086e08                kernel_start
+                0x0000000000086e10                kernel_end
+ .data.rel      0x0000000000086e18        0x8 out/malloc.o
+                0x0000000000086e18                top
+ .data.rel      0x0000000000086e20       0x10 out/buddy_system.o
+                0x0000000000086e20                buddy_start
+                0x0000000000086e28                buddy_end
 
-.bss            0x0000000000086bb0      0x980
-                0x0000000000086bb0                . = ALIGN (0x10)
-                0x0000000000086bb0                __bss_start = .
+.bss            0x0000000000086e30      0x970
+                0x0000000000086e30                . = ALIGN (0x10)
+                0x0000000000086e30                __bss_start = .
  *(.bss .bss.*)
- .bss           0x0000000000086bb0        0x0 start.o
- .bss           0x0000000000086bb0        0x0 exeception.o
- .bss           0x0000000000086bb0        0x0 out/mailbox.o
- .bss           0x0000000000086bb0        0x0 out/core_timer.o
- .bss           0x0000000000086bb0      0x814 out/uart.o
-                0x0000000000086bb0                tx_buf
-                0x0000000000086fb0                tx_write_idx
-                0x0000000000086fb4                tx_read_idx
-                0x0000000000086fb8                rx_buf
-                0x00000000000873b8                rx_write_idx
-                0x00000000000873bc                rx_read_idx
-                0x00000000000873c0                a
- .bss           0x00000000000873c4        0x0 out/irq.o
- .bss           0x00000000000873c4        0x0 out/shell.o
- .bss           0x00000000000873c4        0x0 out/my_string.o
- .bss           0x00000000000873c4        0x0 out/exeception.o
- .bss           0x00000000000873c4        0x0 out/math_.o
- *fill*         0x00000000000873c4        0x4 
- .bss           0x00000000000873c8        0x8 out/devicetree.o
-                0x00000000000873c8                dtb_len
- .bss           0x00000000000873d0        0x0 out/reserve_memory.o
- .bss           0x00000000000873d0        0x0 out/cpio.o
- .bss           0x00000000000873d0        0x0 out/main.o
- .bss           0x00000000000873d0        0x0 out/malloc.o
- .bss           0x00000000000873d0        0x0 out/reboot.o
- .bss           0x00000000000873d0        0x0 out/buddy_system.o
+ .bss           0x0000000000086e30        0x0 start.o
+ .bss           0x0000000000086e30        0x0 exeception.o
+ .bss           0x0000000000086e30        0x0 out/mailbox.o
+ .bss           0x0000000000086e30        0x0 out/core_timer.o
+ .bss           0x0000000000086e30      0x814 out/uart.o
+                0x0000000000086e30                tx_buf
+                0x0000000000087230                tx_write_idx
+                0x0000000000087234                tx_read_idx
+                0x0000000000087238                rx_buf
+                0x0000000000087638                rx_write_idx
+                0x000000000008763c                rx_read_idx
+                0x0000000000087640                a
+ .bss           0x0000000000087644        0x0 out/irq.o
+ .bss           0x0000000000087644        0x0 out/shell.o
+ .bss           0x0000000000087644        0x0 out/my_string.o
+ .bss           0x0000000000087644        0x0 out/exeception.o
+ .bss           0x0000000000087644        0x0 out/math_.o
+ *fill*         0x0000000000087644        0x4 
+ .bss           0x0000000000087648        0x8 out/devicetree.o
+                0x0000000000087648                dtb_len
+ .bss           0x0000000000087650        0x0 out/reserve_memory.o
+ .bss           0x0000000000087650        0x0 out/cpio.o
+ .bss           0x0000000000087650        0x0 out/main.o
+ .bss           0x0000000000087650        0x0 out/malloc.o
+ .bss           0x0000000000087650        0x0 out/reboot.o
+ .bss           0x0000000000087650        0x0 out/buddy_system.o
  *(COMMON)
- COMMON         0x00000000000873d0       0x38 out/mailbox.o
-                0x00000000000873d0                mbox
-                0x00000000000873f0                timer_queue
-                0x00000000000873f8                task_queue
-                0x0000000000087400                queue_head
- COMMON         0x0000000000087408        0x8 out/shell.o
-                0x0000000000087408                CPIO_DEFAULT_PLACE
- COMMON         0x0000000000087410        0x8 out/devicetree.o
-                0x0000000000087410                dtb_place
- COMMON         0x0000000000087418      0x118 out/reserve_memory.o
-                0x0000000000087418                DMA_head
-                0x0000000000087420                buddy
-                0x0000000000087520                CPIO_DEFAULT_PLACE_END
-                0x0000000000087528                frame_array
-                0x0000000000087530                __bss_end = .
-                0x0000000000087530                _end = .
+ COMMON         0x0000000000087650       0x38 out/mailbox.o
+                0x0000000000087650                mbox
+                0x0000000000087670                timer_queue
+                0x0000000000087678                task_queue
+                0x0000000000087680                queue_head
+ COMMON         0x0000000000087688        0x8 out/shell.o
+                0x0000000000087688                CPIO_DEFAULT_PLACE
+ COMMON         0x0000000000087690        0x8 out/devicetree.o
+                0x0000000000087690                dtb_place
+ COMMON         0x0000000000087698      0x108 out/reserve_memory.o
+                0x0000000000087698                DMA_head
+                0x00000000000876a0                buddy
+                0x0000000000087790                CPIO_DEFAULT_PLACE_END
+                0x0000000000087798                frame_array
+                0x00000000000877a0                __bss_end = .
+                0x00000000000877a0                _end = .
 
 /DISCARD/
  *(.comment)
  *(.gnu*)
  *(.note*)
  *(.eh_frame*)
-                0x0000000000000130                __bss_size = ((__bss_end - __bss_start) >> 0x3)
+                0x000000000000012e                __bss_size = ((__bss_end - __bss_start) >> 0x3)
                 0x0000000000200000                _heap_start = 0x200000
-                0x0000000000400000                _heap_end = 0x400000
+                0x0000000001000000                _heap_end = 0x1000000
                 0x0000000000000000                _spin_table_start = 0x0
                 0x0000000000001000                _spin_table_end = 0x1000
                 0x0000000000000000                _buddy_start = 0x0
                 0x000000003c000000                _buddy_end = 0x3c000000
                 0x0000000000060000                _kernel_start = 0x60000
-                0x0000000000087530                _kernel_end = _end
+                0x00000000000877a0                _kernel_end = _end
 OUTPUT(kernel8.elf elf64-littleaarch64)
 LOAD linker stubs
 
-.debug_line     0x0000000000000000     0x1c50
+.debug_line     0x0000000000000000     0x1cfc
  .debug_line    0x0000000000000000       0x5e start.o
  .debug_line    0x000000000000005e       0xd9 exeception.o
  .debug_line    0x0000000000000137      0x111 out/mailbox.o
@@ -360,14 +360,14 @@ LOAD linker stubs
  .debug_line    0x0000000000000f45       0x83 out/exeception.o
  .debug_line    0x0000000000000fc8       0x48 out/math_.o
  .debug_line    0x0000000000001010      0x168 out/devicetree.o
- .debug_line    0x0000000000001178      0x18b out/reserve_memory.o
- .debug_line    0x0000000000001303      0x21d out/cpio.o
- .debug_line    0x0000000000001520      0x117 out/main.o
- .debug_line    0x0000000000001637       0x6f out/malloc.o
- .debug_line    0x00000000000016a6       0x62 out/reboot.o
- .debug_line    0x0000000000001708      0x548 out/buddy_system.o
+ .debug_line    0x0000000000001178      0x194 out/reserve_memory.o
+ .debug_line    0x000000000000130c      0x21d out/cpio.o
+ .debug_line    0x0000000000001529      0x116 out/main.o
+ .debug_line    0x000000000000163f       0x6f out/malloc.o
+ .debug_line    0x00000000000016ae       0x62 out/reboot.o
+ .debug_line    0x0000000000001710      0x5ec out/buddy_system.o
 
-.debug_info     0x0000000000000000     0x3ee9
+.debug_info     0x0000000000000000     0x3db9
  .debug_info    0x0000000000000000       0x2e start.o
  .debug_info    0x000000000000002e       0x2e exeception.o
  .debug_info    0x000000000000005c      0x2b4 out/mailbox.o
@@ -379,14 +379,14 @@ LOAD linker stubs
  .debug_info    0x0000000000001912      0x247 out/exeception.o
  .debug_info    0x0000000000001b59       0x72 out/math_.o
  .debug_info    0x0000000000001bcb      0x480 out/devicetree.o
- .debug_info    0x000000000000204b      0x63a out/reserve_memory.o
- .debug_info    0x0000000000002685      0x5c8 out/cpio.o
- .debug_info    0x0000000000002c4d      0x59f out/main.o
- .debug_info    0x00000000000031ec      0x1ff out/malloc.o
- .debug_info    0x00000000000033eb       0xe2 out/reboot.o
- .debug_info    0x00000000000034cd      0xa1c out/buddy_system.o
+ .debug_info    0x000000000000204b      0x5c6 out/reserve_memory.o
+ .debug_info    0x0000000000002611      0x5c8 out/cpio.o
+ .debug_info    0x0000000000002bd9      0x571 out/main.o
+ .debug_info    0x000000000000314a      0x1ff out/malloc.o
+ .debug_info    0x0000000000003349       0xe2 out/reboot.o
+ .debug_info    0x000000000000342b      0x98e out/buddy_system.o
 
-.debug_abbrev   0x0000000000000000     0x1537
+.debug_abbrev   0x0000000000000000     0x14fd
  .debug_abbrev  0x0000000000000000       0x14 start.o
  .debug_abbrev  0x0000000000000014       0x14 exeception.o
  .debug_abbrev  0x0000000000000028      0x16d out/mailbox.o
@@ -398,12 +398,12 @@ LOAD linker stubs
  .debug_abbrev  0x0000000000000943      0x10e out/exeception.o
  .debug_abbrev  0x0000000000000a51       0x4e out/math_.o
  .debug_abbrev  0x0000000000000a9f      0x175 out/devicetree.o
- .debug_abbrev  0x0000000000000c14      0x19c out/reserve_memory.o
- .debug_abbrev  0x0000000000000db0      0x1d1 out/cpio.o
- .debug_abbrev  0x0000000000000f81      0x178 out/main.o
- .debug_abbrev  0x00000000000010f9      0x121 out/malloc.o
- .debug_abbrev  0x000000000000121a       0xac out/reboot.o
- .debug_abbrev  0x00000000000012c6      0x271 out/buddy_system.o
+ .debug_abbrev  0x0000000000000c14      0x180 out/reserve_memory.o
+ .debug_abbrev  0x0000000000000d94      0x1d1 out/cpio.o
+ .debug_abbrev  0x0000000000000f65      0x169 out/main.o
+ .debug_abbrev  0x00000000000010ce      0x121 out/malloc.o
+ .debug_abbrev  0x00000000000011ef       0xac out/reboot.o
+ .debug_abbrev  0x000000000000129b      0x262 out/buddy_system.o
 
 .debug_aranges  0x0000000000000000      0x330
  .debug_aranges
@@ -441,40 +441,40 @@ LOAD linker stubs
  .debug_aranges
                 0x0000000000000300       0x30 out/buddy_system.o
 
-.debug_str      0x0000000000000000      0xb3e
- .debug_str     0x0000000000000000       0x29 start.o
- .debug_str     0x0000000000000029        0xd exeception.o
-                                         0x2e (size before relaxing)
- .debug_str     0x0000000000000036      0x149 out/mailbox.o
-                                        0x190 (size before relaxing)
- .debug_str     0x000000000000017f       0x5d out/core_timer.o
-                                        0x1aa (size before relaxing)
- .debug_str     0x00000000000001dc      0x15c out/uart.o
-                                        0x2a9 (size before relaxing)
- .debug_str     0x0000000000000338       0x6a out/irq.o
-                                        0x1b2 (size before relaxing)
- .debug_str     0x00000000000003a2       0x71 out/shell.o
-                                        0x1be (size before relaxing)
- .debug_str     0x0000000000000413       0xc8 out/my_string.o
-                                        0x1c7 (size before relaxing)
- .debug_str     0x00000000000004db       0x5f out/exeception.o
-                                        0x1c5 (size before relaxing)
- .debug_str     0x000000000000053a       0x13 out/math_.o
-                                         0x9d (size before relaxing)
- .debug_str     0x000000000000054d      0x170 out/devicetree.o
-                                        0x2eb (size before relaxing)
- .debug_str     0x00000000000006bd      0x17f out/reserve_memory.o
-                                        0x361 (size before relaxing)
- .debug_str     0x000000000000083c      0x10b out/cpio.o
-                                        0x285 (size before relaxing)
- .debug_str     0x0000000000000947       0x6d out/main.o
-                                        0x303 (size before relaxing)
- .debug_str     0x00000000000009b4       0x1b out/malloc.o
-                                        0x15b (size before relaxing)
- .debug_str     0x00000000000009cf       0x25 out/reboot.o
-                                         0xd6 (size before relaxing)
- .debug_str     0x00000000000009f4      0x14a out/buddy_system.o
-                                        0x39a (size before relaxing)
+.debug_str      0x0000000000000000      0xb29
+ .debug_str     0x0000000000000000       0x33 start.o
+ .debug_str     0x0000000000000033        0xd exeception.o
+                                         0x38 (size before relaxing)
+ .debug_str     0x0000000000000040      0x149 out/mailbox.o
+                                        0x19a (size before relaxing)
+ .debug_str     0x0000000000000189       0x5d out/core_timer.o
+                                        0x1b4 (size before relaxing)
+ .debug_str     0x00000000000001e6      0x15c out/uart.o
+                                        0x2b3 (size before relaxing)
+ .debug_str     0x0000000000000342       0x6a out/irq.o
+                                        0x1bc (size before relaxing)
+ .debug_str     0x00000000000003ac       0x71 out/shell.o
+                                        0x1c8 (size before relaxing)
+ .debug_str     0x000000000000041d       0xc8 out/my_string.o
+                                        0x1d1 (size before relaxing)
+ .debug_str     0x00000000000004e5       0x5f out/exeception.o
+                                        0x1cf (size before relaxing)
+ .debug_str     0x0000000000000544       0x13 out/math_.o
+                                         0xa7 (size before relaxing)
+ .debug_str     0x0000000000000557      0x170 out/devicetree.o
+                                        0x2f5 (size before relaxing)
+ .debug_str     0x00000000000006c7      0x16b out/reserve_memory.o
+                                        0x357 (size before relaxing)
+ .debug_str     0x0000000000000832      0x10b out/cpio.o
+                                        0x28f (size before relaxing)
+ .debug_str     0x000000000000093d       0x6d out/main.o
+                                        0x30d (size before relaxing)
+ .debug_str     0x00000000000009aa       0x1b out/malloc.o
+                                        0x165 (size before relaxing)
+ .debug_str     0x00000000000009c5       0x25 out/reboot.o
+                                         0xe0 (size before relaxing)
+ .debug_str     0x00000000000009ea      0x13f out/buddy_system.o
+                                        0x399 (size before relaxing)
 
 .debug_ranges   0x0000000000000000       0xc0
  .debug_ranges  0x0000000000000000       0x30 out/shell.o
