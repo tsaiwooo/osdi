@@ -101,5 +101,19 @@ void main(char* dtb)
         "===================================================DMA "
         "done===============================\n");
 #endif
+    // char* a0 = kmalloc(100);
+    // uart_printf("%x\n", a0);
+    // char* a1 = kmalloc(100);
+    // uart_printf("%x\n", a1);
+    // char* a2 = kmalloc(100);
+    // uart_printf("%x\n", a2);
+    // char* a3 = kmalloc(100);
+    // uart_printf("%x\n", a3);
+    // char* a4 = kmalloc(100);
+    // uart_printf("%x\n", a4);
+    // char* a5 = kmalloc(100);
+    // uart_printf("%x\n", a5);
+    // char* a6 = kmalloc(100);
+    // uart_printf("%x\n", a6);
     shell();
 }

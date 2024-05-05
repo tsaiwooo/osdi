@@ -174,6 +174,7 @@ void kfree(char* address)
     //     DMA_free(address);
     //   }
     if (cur_page->condition == DMA_ALLOCATE) {
+        uart_printf("run\n");
         DMA_free(address);
     }
     //   page_array[cur_index].condition = FREE;

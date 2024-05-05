@@ -30,9 +30,10 @@ kernel8.img: start.o exeception.o $(OBJS)
 clean:
 	rm kernel8.elf $(OUT_DIR)/*.o *.o >/dev/null 2>/dev/null || true
 
-
+run_display:
+	 qemu-system-aarch64 -M raspi3b -kernel kernel8.img -serial null -serial stdio -s  -initrd initramfs.cpio -dtb bcm2710-rpi-3-b-plus.dtb -display vnc=0.0.0.0:22
 run:
-	qemu-system-aarch64 -M raspi3b -kernel kernel8.img -serial null -serial stdio -initrd initramfs.cpio -dtb bcm2710-rpi-3-b-plus.dtb
+	qemu-system-aarch64 -M raspi3b -kernel kernel8.img -serial null -serial stdio -initrd initramfs.cpio -dtb bcm2710-rpi-3-b-plus.dtb  
 
 run_debug:
 	qemu-system-aarch64 -M raspi3b -kernel kernel8.img -display none -serial null -serial stdio -s -S -initrd initramfs.cpio -dtb bcm2710-rpi-3-b-plus.dtb

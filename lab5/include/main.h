@@ -9,7 +9,8 @@
 #include "malloc.h"
 #include "reserve_memory.h"
 #include "shell.h"
+#include "system_call.h"
+#include "thread.h"
 #include "uart.h"
-
-extern char *dtb_place;
-#endif  // _MAIN_H_
+extern char* dtb_place;
+#endif // _MAIN_H_

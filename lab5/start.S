@@ -64,7 +64,6 @@ from_el1_el0:
     msr elr_el1, lr
     eret
 */
-
 from_el1_el0:
     ldr     x1, =_start
     msr     sp_el0, x1
