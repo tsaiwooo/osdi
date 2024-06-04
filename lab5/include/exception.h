@@ -3,11 +3,11 @@
 #include "core_timer.h"
 #include "cpio.h"
 #include "mailbox.h"
+#include "posix.h"
 #include "shell.h"
 #include "system_call.h"
 #include "thread.h"
 #include "uart.h"
-#include "posix.h"
 
 #define uint64_t unsigned long long
 enum svc_type {
@@ -24,14 +24,14 @@ enum svc_type {
     SIG_CALL
 };
 
-enum signal_type{
+enum signal_type {
     SIGKILL = 9,
     SIGDEF,
     SIGRETURN
 };
 
-extern void SIG_return(uint64_t sp,uint64_t elr_el1,uint64_t sp_el0);
-extern void handler(uint64_t,uint64_t,uint64_t);
+extern void SIG_return(uint64_t sp, uint64_t elr_el1, uint64_t sp_el0);
+extern void handler(uint64_t, uint64_t, uint64_t);
 void from_el12el0();
 void exeception_handle();
 void enable_interrupt();
@@ -52,5 +52,8 @@ void kill_(uint64_t);
 void signal_(uint64_t);
 void sig_handler(uint64_t);
 void sig_call(uint64_t);
-void signal_kill(uint64_t ptr,uint64_t sp);
+void signal_kill(uint64_t ptr, uint64_t sp);
+void do_signal();
+void signal_return();
+void save_rsp(uint64_t, uint64_t);
 #endif // __EXCEPTION_H_

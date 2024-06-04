@@ -68,10 +68,10 @@ void svc_handler(int number, uint64_t ptr, uint64_t esr)
             exit_();
             break;
         case MBOX: {
-            // disable_interrupt();
+            disable_interrupt();
             // trap_frame* trap_ptr = (trap_frame*)ptr;
             sys_mbox((unsigned char)trap_ptr->x[0], (unsigned int*)trap_ptr->x[1]);
-            // enable_interrupt();
+            enable_interrupt();
             break;
         }
         case KILL:
@@ -81,6 +81,8 @@ void svc_handler(int number, uint64_t ptr, uint64_t esr)
             signal_(ptr);
             break;
         case SIG_KILL:
+            // disable_interrupt();
+            // enable_interrupt();
             sig_handler(ptr);
             break;
         case SIG_CALL:
@@ -137,10 +139,12 @@ void exec_function(uint64_t ptr)
             // thread* new = thread_create((void*)user_addr);
             // switch_to(get_current(), new);
             // uart_printf("after set\n");
+            // char* new_st = kmalloc(PAGE_SIZE * 4);
             asm volatile(
                 "mov x3, #0\n\t"
                 "msr spsr_el1, x3\n\t"
                 "msr elr_el1, %[data]\n\t"
+                // "msr sp_el0, %[st]\n\t"
                 // "msr sp_el0, %[stack_ptr]\n\t"
                 "eret"
                 :
@@ -168,11 +172,9 @@ void fork_exec(uint64_t ptr)
     for (int i = 1; i <= PAGE_SIZE; ++i) {
         *(char*)(child->user_stack - i) = *(char*)(parent->user_stack - i);
     }
-    // uart_printf("exit3\n");
     for (int i = 1; i <= PAGE_SIZE; ++i) {
         *(char*)(child->kernel_stack - i) = *(char*)(parent->kernel_stack - i);
     }
-    // uart_printf("exit4\n");
     child->x19 = parent->x19;
     child->x20 = parent->x20;
     child->x21 = parent->x21;
@@ -220,19 +222,26 @@ void sys_read(uint64_t ptr)
     char* buf = (char*)trap_ptr->x[0];
     int size = (int)trap_ptr->x[1];
     *IRQs1 |= AUX_INT;
-    enable_interrupt();
-    enable_uart_r_interrupt();
+    // enable_interrupt();
+    // enable_uart_r_interrupt();
 
+    // int i;
+    // for (i = 0; i < size; ++i) {
+    //     // uart_printf("i = %d\n", i);
+    //     buf[i] = async_getc();
+    // }
+    // buf[i] = '\0';
+    // trap_ptr->x[0] = size;
+    // disable_uart_r_interrupt();
+    enable_interrupt();
     int i;
-    for (i = 0; i < size; ++i) {
-        // uart_printf("i = %d\n", i);
-        buf[i] = async_getc();
-    }
-    buf[i] = '\0';
+    for (i = 0; i < size; ++i)
+        buf[i] = uart_getc();
+    buf[size] = '\0';
+    // disable_interrupt();
+    // *IRQ_disable1 |= AUX_INT;
     trap_ptr->x[0] = size;
-    disable_uart_r_interrupt();
     disable_interrupt();
-    *IRQ_disable1 |= AUX_INT;
     // uart_printf("read buf = %s\n", buf);
 }
 
@@ -241,15 +250,22 @@ void sys_write(uint64_t ptr)
     trap_frame* trap_ptr = (trap_frame*)ptr;
     char* buf = (char*)trap_ptr->x[0];
     int size = (int)trap_ptr->x[1];
-    int i;
-    *IRQs1 |= AUX_INT;
-    for (i = 0; i < size; ++i) {
-        async_send(buf[i]);
+    // enable_interrupt();
+    // int i;
+    // *IRQs1 |= AUX_INT;
+    // for (i = 0; i < size; ++i) {
+    //     async_send(buf[i]);
+    // }
+    // trap_ptr->x[0] = i;
+    // disable_uart_r_interrupt();
+    enable_interrupt();
+    for (int i = 0; i < size; ++i) {
+        uart_send(buf[i]);
     }
-    trap_ptr->x[0] = i;
-    disable_uart_r_interrupt();
+    // disable_interrupt();
+    trap_ptr->x[0] = size;
     disable_interrupt();
-    *IRQ_disable1 |= AUX_INT;
+    // *IRQ_disable1 |= AUX_INT;
 }
 
 void from_el12el0()
@@ -272,11 +288,20 @@ void from_el12el0()
 void exit_()
 {
     thread* cur = get_current();
-    cur->status = ZOMBIE;
+    // uart_printf("the kill id = %d\n", cur->thread_id);
+    // cur->status = ZOMBIE;
     if (cur->thread_id) {
         // thread* delete = thread_queue_delete((thread**)&thread_queue, (thread**)&cur);
         // thread_queue_insert((thread**)&zombie_queue, (thread**)&delete);
         cur->status = ZOMBIE;
+        /* new add */
+        kfree((char*)(cur->user_stack - PAGE_SIZE));
+        kfree((char*)(cur->kernel_stack - PAGE_SIZE));
+        kfree((char*)(cur->POSIX.posix_stack - PAGE_SIZE));
+        kfree((char*)cur);
+        /* new add */
+    } else {
+        uart_printf("kernel cannot leave\n");
     }
     schedule();
     // kill_zombies();
@@ -289,12 +314,12 @@ void kill_(uint64_t ptr)
 
     int kill_id = trap_ptr->x[0];
     if (kill_id == cur->thread_id || kill_id == 0) {
-        uart_printf("cannout kill\n");
+        uart_printf("cannot kill\n");
         return;
     }
 
     thread* kill_thread = thread_queue_find(kill_id);
-    if(!kill_thread->thread_id){
+    if (!kill_thread->thread_id) {
         uart_printf("this thread is null\n");
         return;
     }
@@ -303,18 +328,8 @@ void kill_(uint64_t ptr)
     kill_thread = thread_queue_delete((thread**)&thread_queue, (thread**)&kill_thread);
     kfree((char*)(kill_thread->user_stack - PAGE_SIZE));
     kfree((char*)(kill_thread->kernel_stack - PAGE_SIZE));
+    kfree((char*)(kill_thread->POSIX.posix_stack - PAGE_SIZE));
     kfree((char*)kill_thread);
-
-    // asm volatile("ret");
-    // if (kill_thread->thread_id) {
-    //     kill_thread->status = ZOMBIE;
-    //     uart_printf("status = %d\n", kill_thread->status);
-    // }
-    // if (kill_thread) {
-    //     thread* delete = thread_queue_delete((thread**)&thread_queue, (thread**)&kill_thread);
-    //     thread_queue_insert((thread**)&zombie_queue, (thread**)&delete);
-    // }
-    // kill_zombies();
 }
 
 void sys_mbox(unsigned char ch, unsigned int* mbox)
@@ -332,7 +347,7 @@ void signal_(uint64_t ptr)
     thread* cur = get_current();
     trap_frame* trap_ptr = (trap_frame*)ptr;
     int sig_type = (int)trap_ptr->x[0];
-    uint64_t signal_handler = (uint64_t )trap_ptr->x[1];
+    uint64_t signal_handler = (uint64_t)trap_ptr->x[1];
     cur->POSIX.signal_handler[sig_type] = (uint64_t)signal_handler;
     // if(sig_type == SIGKILL || sig_type == SIGDEF){
     //     cur->POSIX.signal_handler[SIGKILL] = (uint64_t)signal_handler;
@@ -344,56 +359,42 @@ void signal_(uint64_t ptr)
 
 void sig_handler(uint64_t ptr)
 {
-    thread *cur = get_current();
-    trap_frame *trap_ptr = (trap_frame *)ptr;
-    unsigned int sig_type = trap_ptr->x[1];
+    // thread* cur = get_current();
+    trap_frame* trap_ptr = (trap_frame*)ptr;
+    // unsigned int sig_type = trap_ptr->x[1];
 
-    cur->signal = true;
-    uint64_t signal_handler = cur->POSIX.signal_handler[sig_type];
-    // store the return address before enter signal handler, include original sp_el0
-    // sp_el1 which before this exeception happend
-    // cur->POSIX.signal_spsr_el1 = trap_ptr->spsr_el1;
-    // cur->POSIX.signal_sp_el0 = trap_ptr->sp_el0;
-    cur->POSIX.signal_sp_el1 = ptr;
-    // cur->POSIX.signal_RA = trap_ptr->elr_el1;
-    // goto signal handler, and give kill_id store at x0
-    // new method
-    // asm volatile("msr sp_el1, %0"::"r"(cur->POSIX.posix_stack));
-    // register unsigned long sp asm("sp") __attribute__((unused)) = cur->POSIX.posix_stack;
-    // signal_kill(ptr,cur->POSIX.posix_stack);
+    // cur->signal = true;
+    thread* find_thread = thread_queue_find(trap_ptr->x[0]);
+    if (!find_thread->thread_id)
+        return;
+    find_thread->signal = 1;
+    // uint64_t signal_handler = find_thread->POSIX.signal_handler[sig_type];
+    // cur->POSIX.signal_sp_el1 = ptr;
     // -------  problem  --------- //
     // 1. 沒有用到自己的stack
     // 2. 沒有分清楚到底誰有註冊誰沒註冊，需要改一下判斷
-    if(sig_type == SIGKILL ){
-        // void (*handler)(uint64_t,uint64_t) = (void (*)(uint64_t,uint64_t))signal_handler;
-        // pass trap_frame address and POSIX stack address
-        // asm volatile("mov x1, %0"::"r"(cur->POSIX.signal_sp_el1));
-        // asm volatile("mov x0, %0"::"r"(ptr));
-        // (*handler)(ptr,cur->POSIX.posix_stack);
-        
-        asm volatile(
-            "mov x10, %0\n\t"
-            "mov x0, %1\n\t"
-            "mov x1, %2\n\t"
-            "mov sp, %3\n\t"
-            "blr x10\n\t"
-            "mov sp, %4\n\t"
-            ::"r"(signal_handler), "r"(ptr), "r"(cur->POSIX.posix_stack), "r"(cur->POSIX.posix_stack),"r"(cur->POSIX.signal_sp_el1)
-        );
-        return_to_user();
-    }
+    // if (sig_type == SIGKILL) {
+    //     asm volatile(
+    //         "mov x10, %0\n\t"
+    //         "mov x0, %1\n\t"
+    //         "mov x1, %2\n\t"
+    //         "mov sp, %3\n\t"
+    //         "blr x10\n\t"
+    //         "mov sp, %4\n\t" ::"r"(signal_handler),
+    //         "r"(ptr), "r"(cur->POSIX.posix_stack), "r"(cur->POSIX.posix_stack), "r"(cur->POSIX.signal_sp_el1));
+    //     return_to_user();
+    // }
 }
 
 void sig_call(uint64_t ptr)
 {
-    thread *cur = get_current();
-    trap_frame *trpa_ptr = (trap_frame *)ptr;
+    thread* cur = get_current();
+    trap_frame* trpa_ptr = (trap_frame*)ptr;
     int sig_case = trpa_ptr->x[0];
 
-    switch (sig_case)
-    {
-    case SIGRETURN:{
-        kfree((char *)(cur->POSIX.posix_stack - PAGE_SIZE));
+    switch (sig_case) {
+    case SIGRETURN: {
+        kfree((char*)(cur->POSIX.posix_stack - PAGE_SIZE));
         // asm volatile(
         // "mrs x3, currentEl\n\t"
         // "msr sp_el0, %0\n\t"
@@ -414,7 +415,7 @@ void sig_call(uint64_t ptr)
         // // restore sp_el1
         // "msr elr_el1, %1\n\t"
         // "mov sp, %2\n\t"
-        // // "eret" 
+        // // "eret"
         // :
         // // : "r"(cur->sp_el0),  "r"(cur->lr), "r"(cur->sp_el1));
         // : "r"(cur->POSIX.signal_sp_el0) , "r"(cur->POSIX.signal_RA), "r"(cur->POSIX.signal_sp_el1));
@@ -424,7 +425,12 @@ void sig_call(uint64_t ptr)
         // ptr->elr_el1 = cur->POSIX.signal_RA ;
         // ptr->sp_el0 = cur->POSIX.signal_sp_el0;
         // return_to_user();
-        SIG_return(cur->POSIX.signal_sp_el1,cur->POSIX.signal_RA,cur->POSIX.signal_sp_el0);
+        // SIG_return(cur->POSIX.signal_sp_el1, cur->POSIX.signal_Rsp, cur->POSIX.signal_sp_el0);
+        cur->POSIX.mask = false;
+        asm volatile("mov sp, %0" ::"r"(cur->POSIX.signal_Rsp));
+        return_to_user();
+
+        // return_to_user();
         break;
     }
     default:
@@ -432,19 +438,18 @@ void sig_call(uint64_t ptr)
     }
 }
 
-void signal_kill(uint64_t ptr,uint64_t sp)
+void signal_kill(uint64_t ptr, uint64_t sp)
 {
     trap_frame* trap_ptr = (trap_frame*)ptr;
     thread* cur = get_current();
     int kill_id = trap_ptr->x[0];
     if (kill_id == cur->thread_id || kill_id == 0) {
-        uart_printf("cannout kill\n");
+        uart_printf("cannot kill\n");
         return;
     }
 
-    
     thread* kill_thread = thread_queue_find(kill_id);
-    if(!kill_thread->thread_id){
+    if (!kill_thread->thread_id) {
         uart_printf("this thread is null\n");
         return;
     }
@@ -453,5 +458,69 @@ void signal_kill(uint64_t ptr,uint64_t sp)
     kill_thread = thread_queue_delete((thread**)&thread_queue, (thread**)&kill_thread);
     kfree((char*)(kill_thread->user_stack - PAGE_SIZE));
     kfree((char*)(kill_thread->kernel_stack - PAGE_SIZE));
+    kfree((char*)(kill_thread->POSIX.posix_stack - PAGE_SIZE));
     kfree((char*)kill_thread);
+}
+
+void do_signal()
+{
+    thread* cur = get_current();
+    if (cur->signal) {
+        // cur->signal = false;
+
+        uint64_t signal_handler = cur->POSIX.signal_handler[SIGKILL];
+        if (signal_handler == (uint64_t)exit_) {
+            uart_printf("in signal check id = %d\n", cur->thread_id);
+            cur->signal = false;
+            exit();
+        } else {
+            // -------  problem  --------- //
+            // 1. 沒有用到自己的stack
+            // 2. 沒有分清楚到底誰有註冊誰沒註冊，需要改一下判斷
+            // asm volatile(
+            //     "mov x10, %0\n\t"
+            //     "blr x10\n\t"
+            //     "mov sp, %1\n\t" ::"r"(signal_handler),
+            //     "r"(cur->POSIX.signal_sp_el1));
+            // return_to_user();
+            enable_interrupt();
+            // asm volatile(
+            //     "mov x11, sp\n\t"
+            //     "mov sp, %0\n\t"
+            //     "mov x10, %1\n\t"
+            //     "blr x10\n\t"
+            //     "mov sp, x11\n\t" ::"r"(cur->POSIX.posix_stack),
+            //     "r"(signal_handler));
+            // asm volatile("mov %0, sp" : "=r"(cur->POSIX.signal_Rsp) :);
+            // cur->POSIX.signal_Rsp = ptr;
+            cur->POSIX.mask = true;
+            cur->signal = false;
+            asm volatile(
+                "mov x11, sp\n\t"
+                "msr sp_el0, %0\n\t"
+                "mov x4, 0\n\t"
+                "msr spsr_el1, x4\n\t"
+                "msr elr_el1, %1\n\t"
+                "mov x30, %2\n\t"
+                "eret" ::"r"(cur->POSIX.posix_stack),
+                "r"(signal_handler), "r"(signal_return));
+            uart_printf("signal return\n");
+        }
+    }
+}
+
+void signal_return()
+{
+    register unsigned long x0 asm("x0") __attribute__((unused)) = SIGRETURN;
+    register unsigned long x8 asm("x8") __attribute__((unused)) = SIG_CALL;
+
+    asm volatile("svc 0" ::);
+}
+
+void save_rsp(uint64_t a, uint64_t ptr)
+{
+    thread* cur = get_current();
+    if (!cur->POSIX.mask) {
+        cur->POSIX.signal_Rsp = ptr;
+    }
 }

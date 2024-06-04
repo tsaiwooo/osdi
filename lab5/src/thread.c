@@ -19,13 +19,15 @@ void init_thread()
     // }
     thread_count = 0;
     thread* thread_;
-    thread_ = (thread*)kmalloc(sizeof(thread));
+    thread_ = (thread*)kmalloc(PAGE_SIZE);
+    // thread_ = (thread*)kmalloc(sizeof(thread));
     // POSIX clear
-    for(int i=0; i<SIG_NUMS; ++i){
+    for (int i = 0; i < SIG_NUMS; ++i) {
         thread_->POSIX.signal_handler[i] = 0;
     }
     // 要加 or 不加？
-    thread_->POSIX.signal_handler[SIGKILL] = (uint64_t) signal_kill;
+    thread_->POSIX.signal_handler[SIGKILL] = (uint64_t)exit;
+    // thread_->POSIX.signal_handler[SIGKILL] = (uint64_t)signal_kill;
     thread_->POSIX.posix_stack = (uint64_t)kmalloc(PAGE_SIZE) + PAGE_SIZE;
     thread_->thread_id = thread_count++;
     thread_->status = RUN;
@@ -49,6 +51,7 @@ void init_thread()
     thread_queue_insert((thread**)&thread_queue, (thread**)&thread_);
     kernel_thread = thread_;
     thread_->signal = false;
+    thread_->POSIX.mask = false;
     asm volatile("msr tpidr_el1, %0" ::"r"(thread_queue));
     // asm volatile("msr tpidr_el1, %0" ::"r"(kernel_thread));
 }
@@ -57,13 +60,15 @@ thread* thread_create(void (*function)())
 {
     // thread* cur = (thread*)kmalloc(sizeof(thread));
     thread* thread_;
-    thread_ = kmalloc(sizeof(thread));
+    thread_ = (thread*)kmalloc(PAGE_SIZE);
+    // thread_ = (thread*)kmalloc(sizeof(thread));
     // POSIX clear
-    for(int i=0; i<SIG_NUMS; ++i){
+    for (int i = 0; i < SIG_NUMS; ++i) {
         thread_->POSIX.signal_handler[i] = 0;
     }
-    thread_->POSIX.signal_handler[SIGKILL] = (uint64_t) signal_kill;
-    thread_->POSIX.posix_stack = (uint64_t)kmalloc(PAGE_SIZE) + PAGE_SIZE;
+    thread_->POSIX.signal_handler[SIGKILL] = (uint64_t)exit_;
+    // thread_->POSIX.signal_handler[SIGKILL] = (uint64_t)signal_kill;
+    thread_->POSIX.posix_stack = (uint64_t)kmalloc(PAGE_SIZE) + (uint64_t)PAGE_SIZE;
     thread_->thread_id = thread_count++;
     thread_->status = RUN;
     thread_->prev = NULL;
@@ -77,9 +82,14 @@ thread* thread_create(void (*function)())
     // stack pointer start address
     thread_->fp = thread_->user_stack;
 
+    // uart_printf("thread = %x\n", thread_);
+    // uart_printf("thread user stack  %x\n", thread_->user_stack);
+    // uart_printf("thread kernel stack %x\n", thread_->kernel_stack);
+    // uart_printf("thread posix stack %x\n", thread_->POSIX.posix_stack);
     thread_->lr = (uint64_t)function;
     // thread_->lr = (uint64_t)from_el12el0;
     thread_->signal = false;
+    thread_->POSIX.mask = false;
     // void (*el12el0)(uint64_t, uint64_t) = (void (*)(thread_->user_stack, function))from_el12el0;
     // thread_->lr = *(uint64_t)from_el12el0(thread_->user_stack, (uint64_t)function);
     thread_queue_insert((thread**)&thread_queue, (thread**)&thread_);
@@ -180,7 +190,10 @@ void schedule()
     // uart_printf("exit1\n");
     // delay(10000000);
     // uart_printf("cur_id = %d, next_id = %d\n", cur->thread_id, next->thread_id);
+    do_signal();
     switch_to(cur, next);
+    // if (cur->signal) {
+    // }
     // switch_to(cur, thread_queue->next->next);
 }
 
@@ -240,7 +253,7 @@ void test1(int a, int b)
 void fork_test()
 {
     uart_printf("\nFork Test, pid %d\n", getpid());
-    signal(SIG_KILL,(uint64_t)&kill_);
+    signal(SIG_KILL, (uint64_t)&kill_);
     // int cnt = 1;
     int ret = 0;
     // if ((ret = fork()) == 0) { // child
@@ -276,20 +289,21 @@ void fork_test()
         // for (int i = 0; i < 2; ++i) {
         //     fork();
         // }
-        while(1){
-            uart_printf("child, id = %d\n", getpid());
+        while (1) {
+            // uart_printf("child, id = %d\n", getpid());
             // uart_printf("I am child in while\n");
             delay(10000000);
         }
+
         // test1(1, 2);
 
         // }
     } else {
         uart_printf("parent back, child id = %d\n", ret);
-        
+
         // test1(4, 6);
         delay(100000000);
-        kill(1,SIG_KILL);
+        kill(1, SIG_KILL);
         uart_printf("signal return\n");
         // while(1);
         //     delay(10000000);

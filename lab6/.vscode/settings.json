@@ -1,0 +1,32 @@
+{
+  "files.associations": {
+    "buddy_system.h": "c",
+    "shell.h": "c",
+    "uart.h": "c",
+    "reserve_memory.h": "c",
+    "my_string.h": "c",
+    "core_timer.h": "c",
+    "function.h": "c",
+    "cpio.h": "c",
+    "functional": "c",
+    "main.h": "c",
+    "system_call.h": "c",
+    "thread.h": "c",
+    "exception.h": "c",
+    "irq.h": "c",
+    "chrono": "c",
+    "array": "c",
+    "string_view": "c",
+    "initializer_list": "c",
+    "ranges": "c",
+    "utility": "c",
+    "mailbox.h": "c",
+    "gpio.h": "c",
+    "string": "c",
+    "virtual_mem.h": "c",
+    "malloc.h": "c",
+    "mm.h": "c",
+    "posix.h": "c",
+    "thread": "c"
+  }
+}
