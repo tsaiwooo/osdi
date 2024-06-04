@@ -14,6 +14,7 @@ int tmpfs_setup_mount(struct filesystem* fs, struct mount* mount)
     // type
     root->type = VNODE_TYPE_DIRECTORY;
     mount->root = root;
+
     return 0;
 }
 
@@ -144,6 +145,7 @@ int tmpfs_create(struct vnode* dir_node, struct vnode** target, const char* comp
     file_data->size = 0;
 
     new_node->internal = file_data;
+
     new_node->type = VNODE_TYPE_FILE;
     // } else if (type == VNODE_TYPE_DIRECTORY) {
     //     struct tmpfs_dir_data* dir_data = (struct tmpfs_dir_data*)kmalloc(sizeof(struct tmpfs_dir_data));
@@ -157,6 +159,8 @@ int tmpfs_create(struct vnode* dir_node, struct vnode** target, const char* comp
     strcpy(dir_data->names[dir_data->entry_counts], component_name);
     dir_data->entry_counts++;
 
+    // basic 3
+    new_node->parent = dir_node;
     *target = new_node;
     return 0;
 }
@@ -172,8 +176,12 @@ int tmpfs_mkdir(struct vnode* dir_node, struct vnode** target, const char* compo
     new_dir_data->entry_counts = 0;
     new_dir->internal = new_dir_data;
     dir_data->entries[dir_data->entry_counts] = new_dir;
+    // strcpy(dir_data->names[dir_data->entry_counts], component_name);
+    // strncpy(dir_data->names[dir_data->entry_counts], component_name, strlen(component_name));
     strncpy(dir_data->names[dir_data->entry_counts], component_name, sizeof(component_name));
     dir_data->entry_counts++;
+    // basic 3
+    new_dir->parent = dir_node;
     *target = new_dir;
     return 0;
 }

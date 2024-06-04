@@ -1,6 +1,7 @@
 #ifndef __VFS_H_
 #define __VFS_H_
 #include "buddy_system.h"
+#include "cpio.h"
 #include "exception.h"
 #include "thread.h"
 #include "tmpfs.h"
@@ -20,6 +21,7 @@ struct vnode {
     struct file_operations* f_ops;
     void* internal;
     int type;
+    struct vnode* parent;
 };
 
 // file handle
@@ -57,9 +59,15 @@ struct vnode_operations {
         const char* component_name);
 };
 
+struct cur_work {
+    struct vnode* vnode;
+    char dir_name[32];
+};
+struct cur_work* cur_work;
 struct mount* rootfs;
 struct filesystem* global_fs_list[MAX_FILESYSTEMS];
 unsigned int filesystem_count;
+void initramfs();
 int get_free_fd(struct thread* cur);
 struct filesystem* get_fs(const char* fs);
 void rootfs_init();
@@ -72,4 +80,5 @@ int vfs_read(struct file* file, void* buf, size_t len);
 int vfs_mkdir(const char* pathname);
 int vfs_mount(const char* target, const char* filesystem);
 int vfs_lookup(const char* pathname, struct vnode** target);
+int vfs_chdir(const char* pathname);
 #endif // __VFS_H_

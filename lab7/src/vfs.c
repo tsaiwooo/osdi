@@ -15,6 +15,11 @@ void rootfs_init()
     fs->setup_mount = &tmpfs_setup_mount;
     register_filesystem(fs);
     tmpfs_setup_mount(fs, rootfs);
+
+    // basic 3
+    cur_work = (struct cur_work*)kmalloc(sizeof(struct cur_work));
+    strcpy(cur_work->dir_name, "/");
+    cur_work->vnode = rootfs->root;
 }
 
 int register_filesystem(struct filesystem* fs)
@@ -47,9 +52,19 @@ int vfs_open(const char* pathname, int flags, struct file** target)
         file_name = basename(file_name);
 
         struct vnode* target_file;
-        ret = vfs_lookup(dir_path, &vnode);
+        // uart_printf("pathname = %s, dir_path = %s\n", pathname, dir_path);
+        if (strcmp(dir_path, "..") == 0) {
+            vnode = cur_work->vnode->parent;
+        } else if (strcmp(dir_path, ".") == 0) {
+            vnode = cur_work->vnode;
+        } else {
+            ret = vfs_lookup(dir_path, &vnode);
+        }
+        // if (ret == -1) {
+        // initramfs bug here
         ret = vnode->v_ops->create(vnode, &target_file, file_name);
         target_file->f_ops->open(target_file, target);
+        // }
         // }
 
         // struct vnode* dir_vnode;
@@ -145,31 +160,76 @@ int vfs_mount(const char* target, const char* filesystem)
     target_vnode->mount = new_mount; // 更新節點的掛載點參考
     /* init it internal */
     // ((struct tmpfs_dir_data*)target_vnode->internal)->entry_counts = 0;
+    // basic 3
+    new_mount->root->parent = target_vnode->parent;
     return 0;
 }
 
 int vfs_lookup(const char* pathname, struct vnode** target)
 {
-    struct vnode* current_vnode = rootfs->root;
+    // struct vnode* current_vnode = rootfs->root;
+    struct vnode* current_vnode = cur_work->vnode;
     // uart_printf("root addr = %x\n", rootfs->root);
     char* path_copy = strdup(pathname);
     char* token = strtok(path_copy, "/");
 
     while (token != NULL) {
+        // uart_printf("token = %s\n", token);
         // 遇到新的掛載點，換成新的vnode 然後往後執行，應該用if,if 還是用if,else if -> 用else if直接檢查接下來的file比較好？
-        if (current_vnode->mount != NULL) {
+        if (strcmp(token, ".") == 0) {
+            // do nothing;
+            // token = strtok(NULL, "/");
+            // continue;
+            ;
+        } else if (strcmp(token, "..") == 0) {
+            if (current_vnode->parent) {
+                current_vnode = current_vnode->parent;
+            }
+            // token = strtok(NULL, "/");
+            // continue;
+        } else if (current_vnode->mount != NULL) {
             // change to new fs vnode
             current_vnode = current_vnode->mount->root;
-        } else if (current_vnode->v_ops->lookup(current_vnode, target, token) != 0) {
-            kfree(path_copy);
-            return -1;
+            // token = strtok(NULL, "/");
+            // continue;
+        } else {
+            if (current_vnode->v_ops->lookup(current_vnode, target, token) != 0) {
+                kfree(path_copy);
+                return -1;
+            }
+            current_vnode = *target;
         }
-        current_vnode = *target;
+        // current_vnode = *target;
         token = strtok(NULL, "/");
     }
     kfree(path_copy);
     *target = current_vnode;
     return 0;
+}
+
+int vfs_chdir(const char* pathname)
+{
+    if (strcmp(pathname, "/") == 0) {
+        cur_work->vnode = rootfs->root;
+        strcpy(cur_work->dir_name, "/");
+        return 0;
+    }
+    char* path_copy = strdup(pathname);
+    char* dir_name_path = strdup(path_copy);
+
+    char* dir_path = dirname(path_copy);
+    char* dir_name = basename(dir_name_path);
+    struct vnode* dir_vnode;
+    // struct vnode* new_vnode;
+    int ret = vfs_lookup(pathname, &dir_vnode);
+    cur_work->vnode = dir_vnode;
+    strcpy(cur_work->dir_name, dir_name);
+    // if (ret != 0 && !strtok(NULL, "/"))
+    // ret = dir_vnode->v_ops->mkdir(dir_vnode, &new_vnode, dir_name);
+    kfree(dir_path);
+    kfree(dir_name);
+    kfree(path_copy);
+    return ret;
 }
 
 int get_free_fd(struct thread* cur)
@@ -189,4 +249,37 @@ struct filesystem* get_fs(const char* fs)
         }
     }
     return NULL;
+}
+
+void initramfs()
+{
+    vfs_mkdir("/initramfs");
+    // vfs_mount("/initramfs", "tmpfs");
+    cpio_newc_header* header = CPIO_DEFAULT_PLACE;
+    char new_path[64];
+    while (1) {
+        unsigned long file_size = parse_hex(header->c_filesize, 8);
+        unsigned long name_size = parse_hex(header->c_namesize, 8);
+        unsigned long mode = parse_hex(header->c_mode, 8);
+        char* filename = (char*)((char*)header + sizeof(struct cpio_newc_header));
+        if (strncmp(filename, CPIO_FOOTER_MAGIC, 10) == 0) {
+            break;
+        }
+        strcpy(new_path, "/initramfs/");
+        strcat(new_path, filename);
+        unsigned long offset = name_size + sizeof(cpio_newc_header);
+        offset = (offset + 3) & ~3;
+        char* data = (char*)header + offset;
+        struct file* file;
+        offset = file_size;
+        offset = (offset + 3) & ~3;
+        header = (cpio_newc_header*)(data + offset);
+        if (mode & 0040000)
+            vfs_mkdir(new_path);
+        else if (mode & 0100000) {
+            vfs_open(new_path, O_CREAT, &file);
+            vfs_write(file, (void*)data, file_size);
+            vfs_close(file);
+        }
+    }
 }

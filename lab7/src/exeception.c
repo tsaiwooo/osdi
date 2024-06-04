@@ -128,6 +128,7 @@ void svc_handler(int number, uint64_t ptr, uint64_t esr)
             trap_ptr->x[0] = vfs_mount((const char*)trap_ptr->x[1], (const char*)trap_ptr->x[2]);
             break;
         case SYS_CHDIR:
+            trap_ptr->x[0] = vfs_chdir((const char*)trap_ptr->x[0]);
             break;
         default:
             uart_printf("no support type system call = %d\n", type);

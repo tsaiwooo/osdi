@@ -128,6 +128,7 @@ void main(char* dtb)
     // degub_info();
 #endif
     rootfs_init();
+    // initramfs();
     // int fd = 0;
     // char buf[64];
     // long len;
@@ -190,6 +191,45 @@ void main(char* dtb)
     //     uart_printf("failed\n");
     // }
 
+    // uart_printf("\nBasic 3\n");
+    // chdir("/tmp");
+    // fd = open("./lookup1", O_CREAT);
+    // uart_printf("fd: %d\n", fd);
+    // len = write(fd, "lookup1 test", 12);
+    // uart_printf("wlen: %ld\n", len);
+    // close(fd);
+    // fd = open("../lookup2", O_CREAT);
+    // uart_printf("fd: %d\n", fd);
+    // len = write(fd, "lookup2 test", 12);
+    // uart_printf("wlen: %ld\n", len);
+    // close(fd);
+    // chdir("/");
+    // fd = open("./tmp/lookup1", 0);
+    // uart_printf("fd: %d\n", fd);
+    // len = read(fd, buf, 64);
+    // uart_printf("rlen: %ld\n", len);
+    // close(fd);
+    // len = len < 0 ? 0 : len;
+    // buf[len] = 0;
+    // uart_printf("lookup1: ");
+    // if (strcmp(buf, "lookup1 test") == 0) {
+    //     uart_printf("success\n");
+    // } else {
+    //     uart_printf("failed\n");
+    // }
+    // fd = open("./lookup2", 0);
+    // // uart_printf("fd: %d\n", fd);
+    // len = read(fd, buf, 64);
+    // // uart_printf("rlen: %ld\n", len);
+    // close(fd);
+    // len = len < 0 ? 0 : len;
+    // buf[len] = 0;
+    // uart_printf("lookup2: ");
+    // if (strcmp(buf, "lookup2 test") == 0) {
+    //     uart_printf("success\n");
+    // } else {
+    //     uart_printf("failed\n");
+    // }
 #ifdef SYSTEM_CALL
     uint64_t tmp;
     asm volatile("mrs %0, cntkctl_el1" : "=r"(tmp));
