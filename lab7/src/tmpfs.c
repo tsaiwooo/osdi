@@ -56,6 +56,7 @@ struct vnode* tmpfs_vnode()
     tmpfs_f_op->close = &tmpfs_close;
     vtmp->f_ops = tmpfs_f_op;
     vtmp->v_ops = tmpfs_v_op;
+    vtmp->mount = NULL;
     // if(!td) {
     //     td->vnode = vtmp;
     //     vtmp->internal = td;
@@ -124,7 +125,7 @@ int tmpfs_lookup(struct vnode* dir_node, struct vnode** target, const char* comp
     struct tmpfs_dir_data* dir_data = (struct tmpfs_dir_data*)dir_node->internal;
 
     for (int i = 0; i < dir_data->entry_counts; i++) {
-        if (strcmp(dir_data->names[i], component_name) == 0) {
+        if (strncmp(dir_data->names[i], component_name, strlen(dir_data->names[i])) == 0) {
             *target = dir_data->entries[i];
             return 0;
         }
@@ -140,7 +141,8 @@ int tmpfs_create(struct vnode* dir_node, struct vnode** target, const char* comp
     }
     struct vnode* new_node = tmpfs_vnode();
     // if (type == VNODE_TYPE_FILE) {
-    struct tmpfs_file_data* file_data = (struct tmpfs_file_data*)kmalloc(sizeof(struct tmpfs_file_data));
+    // struct tmpfs_file_data* file_data = (struct tmpfs_file_data*)kmalloc(sizeof(struct tmpfs_file_data));
+    struct tmpfs_file_data* file_data = (struct tmpfs_file_data*)kmalloc(PAGE_SIZE);
     file_data->data = NULL;
     file_data->size = 0;
 
@@ -177,8 +179,8 @@ int tmpfs_mkdir(struct vnode* dir_node, struct vnode** target, const char* compo
     new_dir->internal = new_dir_data;
     dir_data->entries[dir_data->entry_counts] = new_dir;
     // strcpy(dir_data->names[dir_data->entry_counts], component_name);
-    // strncpy(dir_data->names[dir_data->entry_counts], component_name, strlen(component_name));
-    strncpy(dir_data->names[dir_data->entry_counts], component_name, sizeof(component_name));
+    strncpy(dir_data->names[dir_data->entry_counts], component_name, strlen(component_name));
+    // strncpy(dir_data->names[dir_data->entry_counts], component_name, sizeof(component_name));
     dir_data->entry_counts++;
     // basic 3
     new_dir->parent = dir_node;

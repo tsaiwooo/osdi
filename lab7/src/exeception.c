@@ -95,6 +95,7 @@ void svc_handler(int number, uint64_t ptr, uint64_t esr)
             int fd = get_free_fd(cur);
             if (fd >= 0) {
                 vfs_open((const char*)trap_ptr->x[0], trap_ptr->x[1], (struct file**)&file);
+                // uart_printf("in exeception open data size = %s\n", ((struct tmpfs_file_data*)file->vnode->internal)->size);
                 cur->fd[fd] = file;
                 // uart_printf("fd_addr = %x\n", file);
                 trap_ptr->x[0] = fd;

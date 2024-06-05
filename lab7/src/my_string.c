@@ -181,11 +181,18 @@ int strlen(const char* str)
 char* strcpy(char* to, const char* from)
 {
     char* save = to;
-    while (*from != 0) {
+    int len = strlen(from);
+    // while (*from != 0) {
+    // *to = *from;
+    // to++;
+    // from++;
+    // }
+    while (len--) {
         *to = *from;
         to++;
         from++;
     }
+    *to = '\0';
     return save;
 }
 
@@ -249,82 +256,82 @@ long hextol(char* s)
     return r;
 }
 
-// char* strtok(s, delim)
-// register char* s;
-// register const char* delim;
-// {
-//     register char* spanp;
-//     register int c, sc;
-//     char* tok;
-//     static char* last;
-
-//     if (s == NULL && (s = last) == NULL)
-//         return (NULL);
-
-//     /*
-//      * Skip (span) leading delimiters (s += strspn(s, delim), sort of).
-//      */
-// cont:
-//     c = *s++;
-//     for (spanp = (char*)delim; (sc = *spanp++) != 0;) {
-//         if (c == sc)
-//             goto cont;
-//     }
-
-//     if (c == 0) { /* no non-delimiter characters */
-//         last = NULL;
-//         return (NULL);
-//     }
-//     tok = s - 1;
-
-//     /*
-//      * Scan token (scan for delimiters: s += strcspn(s, delim), sort of).
-//      * Note that delim must have one NUL; we stop if we see that, too.
-//      */
-//     for (;;) {
-//         c = *s++;
-//         spanp = (char*)delim;
-//         do {
-//             if ((sc = *spanp++) == c) {
-//                 if (c == 0)
-//                     s = NULL;
-//                 else
-//                     s[-1] = 0;
-//                 last = s;
-//                 return (tok);
-//             }
-//         } while (sc != 0);
-//     }
-//     /* NOTREACHED */
-// }
-char* strtok(char* str, const char* delimiters)
+char* strtok(s, delim)
+register char* s;
+register const char* delim;
 {
-    static char* last = NULL;
-    if (str == NULL) {
-        str = last;
+    register char* spanp;
+    register int c, sc;
+    char* tok;
+    static char* last;
+
+    if (s == NULL && (s = last) == NULL)
+        return (NULL);
+
+    /*
+     * Skip (span) leading delimiters (s += strspn(s, delim), sort of).
+     */
+cont:
+    c = *s++;
+    for (spanp = (char*)delim; (sc = *spanp++) != 0;) {
+        if (c == sc)
+            goto cont;
     }
-    if (str == NULL) {
-        return NULL;
-    }
-    while (*str && strchr(delimiters, *str)) {
-        str++;
-    }
-    if (*str == '\0') {
+
+    if (c == 0) { /* no non-delimiter characters */
         last = NULL;
-        return NULL;
+        return (NULL);
     }
-    char* token_start = str;
-    while (*str && !strchr(delimiters, *str)) {
-        str++;
+    tok = s - 1;
+
+    /*
+     * Scan token (scan for delimiters: s += strcspn(s, delim), sort of).
+     * Note that delim must have one NUL; we stop if we see that, too.
+     */
+    for (;;) {
+        c = *s++;
+        spanp = (char*)delim;
+        do {
+            if ((sc = *spanp++) == c) {
+                if (c == 0)
+                    s = NULL;
+                else
+                    s[-1] = 0;
+                last = s;
+                return (tok);
+            }
+        } while (sc != 0);
     }
-    if (*str) {
-        *str = '\0';
-        last = str + 1;
-    } else {
-        last = NULL;
-    }
-    return token_start;
+    /* NOTREACHED */
 }
+// char* strtok(char* str, const char* delimiters)
+// {
+//     static char* last = NULL;
+//     if (str == NULL) {
+//         str = last;
+//     }
+//     if (str == NULL) {
+//         return NULL;
+//     }
+//     while (*str && strchr(delimiters, *str)) {
+//         str++;
+//     }
+//     if (*str == '\0') {
+//         last = NULL;
+//         return NULL;
+//     }
+//     char* token_start = str;
+//     while (*str && !strchr(delimiters, *str)) {
+//         str++;
+//     }
+//     if (*str) {
+//         *str = '\0';
+//         last = str + 1;
+//     } else {
+//         last = NULL;
+//     }
+//     return token_start;
+// }
 
 char* strchr(const char* str, int c)
 {
@@ -341,10 +348,13 @@ char* strdup(const char* src)
 {
     int len = strlen(src) + 1;
     char* dest = (char*)kmalloc(len);
+    // for (int i = 0; i < 128; ++i) {
+    //     dest[i] = '\0';
+    // }
     if (dest) {
         strcpy(dest, src);
     }
-    dest[len] = '\0';
+    // dest[len] = '\0';
     return dest;
 }
 

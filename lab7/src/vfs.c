@@ -169,8 +169,10 @@ int vfs_lookup(const char* pathname, struct vnode** target)
 {
     // struct vnode* current_vnode = rootfs->root;
     struct vnode* current_vnode = cur_work->vnode;
-    // uart_printf("root addr = %x\n", rootfs->root);
+
     char* path_copy = strdup(pathname);
+    // char* path_copy = kmalloc(64);
+    // strncpy(path_copy, pathname, strlen(pathname));
     char* token = strtok(path_copy, "/");
 
     while (token != NULL) {
@@ -256,8 +258,9 @@ void initramfs()
     vfs_mkdir("/initramfs");
     // vfs_mount("/initramfs", "tmpfs");
     cpio_newc_header* header = CPIO_DEFAULT_PLACE;
-    char new_path[64];
     while (1) {
+        // char new_path[32];
+        char* new_path = kmalloc(64);
         unsigned long file_size = parse_hex(header->c_filesize, 8);
         unsigned long name_size = parse_hex(header->c_namesize, 8);
         unsigned long mode = parse_hex(header->c_mode, 8);
@@ -266,7 +269,11 @@ void initramfs()
             break;
         }
         strcpy(new_path, "/initramfs/");
+        new_path[strlen("/initramfs/")] = '\0';
         strcat(new_path, filename);
+        new_path[strlen("/initramfs/") + name_size] = '\0';
+        uart_printf("initramfs filename = %s\n", filename);
+        uart_printf("initramfs absolute file path = %s\n", new_path);
         unsigned long offset = name_size + sizeof(cpio_newc_header);
         offset = (offset + 3) & ~3;
         char* data = (char*)header + offset;

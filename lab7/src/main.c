@@ -128,10 +128,21 @@ void main(char* dtb)
     // degub_info();
 #endif
     rootfs_init();
-    // initramfs();
+    initramfs();
     // int fd = 0;
     // char buf[64];
     // long len;
+    // uart_printf("\nBasic 4\ninitramfs: ");
+    // fd = open("/initramfs/vfs1.img", 0);
+    // // uart_printf("fd: %d\n", fd);
+    // len = read(fd, buf, 64);
+    // // uart_printf("rlen: %ld\n", len);
+    // close(fd);
+    // if (len == 64 && *(unsigned int*)(buf + 4) == 0xd503201f) {
+    //     uart_printf("success\n");
+    // } else {
+    //     uart_printf("failed\n");
+    // }
 
     // uart_printf("\nBasic 1\ntmpfile: ");
     // fd = open("/tmpfile", O_CREAT);
