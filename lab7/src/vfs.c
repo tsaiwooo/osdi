@@ -7,7 +7,6 @@ void rootfs_init()
     // init file system
     filesystem_count = 0;
     rootfs = (struct mount*)kmalloc(sizeof(struct mount));
-
     // tmpfs create
     struct filesystem* fs = (struct filesystem*)kmalloc(sizeof(struct filesystem));
     fs->name = kmalloc(sizeof(char) * 16);
@@ -27,6 +26,8 @@ int register_filesystem(struct filesystem* fs)
     // register the file system to the kernel.
     // you can also initialize memory pool of the file system here.
     global_fs_list[filesystem_count] = (struct filesystem*)kmalloc(sizeof(struct filesystem));
+    global_fs_list[filesystem_count]->name = kmalloc(32);
+    // uart_printf("%d, %s, %x\n", filesystem_count, fs->name, global_fs_list[0]);
     strcpy(global_fs_list[filesystem_count]->name, fs->name);
     global_fs_list[filesystem_count++] = fs;
     return 0;
@@ -75,8 +76,8 @@ int vfs_open(const char* pathname, int flags, struct file** target)
         // } else {
         //     return -1;
         // }
-        kfree(dir_path);
-        kfree(file_name);
+        // kfree(dir_path);
+        // kfree(file_name);
     } else {
         return -1;
     }
@@ -106,19 +107,24 @@ int vfs_read(struct file* file, void* buf, size_t len)
 int vfs_mkdir(const char* pathname)
 {
     char* path_copy = strdup(pathname);
+    // uart_printf("exit0\n");
     char* dir_name_path = strdup(pathname);
+    // uart_printf("exit1\n");
 
     char* dir_path = dirname(path_copy);
     char* dir_name = basename(dir_name_path);
+    // uart_printf("exit2\n");
 
     struct vnode* dir_vnode;
     struct vnode* new_vnode;
     int ret = vfs_lookup(dir_path, &dir_vnode);
+    // uart_printf("exit3\n");
     // if (ret != 0 && !strtok(NULL, "/"))
+    // uart_printf("v_ops addr = %x", dir_vnode->v_ops);
     ret = dir_vnode->v_ops->mkdir(dir_vnode, &new_vnode, dir_name);
-    kfree(dir_path);
-    kfree(dir_name);
-    kfree(path_copy);
+    // kfree(dir_path);
+    // kfree(dir_name);
+    // kfree(path_copy);
     return ret;
 }
 
@@ -196,7 +202,7 @@ int vfs_lookup(const char* pathname, struct vnode** target)
             // continue;
         } else {
             if (current_vnode->v_ops->lookup(current_vnode, target, token) != 0) {
-                kfree(path_copy);
+                // kfree(path_copy);
                 return -1;
             }
             current_vnode = *target;
@@ -204,7 +210,7 @@ int vfs_lookup(const char* pathname, struct vnode** target)
         // current_vnode = *target;
         token = strtok(NULL, "/");
     }
-    kfree(path_copy);
+    // kfree(path_copy);
     *target = current_vnode;
     return 0;
 }
@@ -219,7 +225,6 @@ int vfs_chdir(const char* pathname)
     char* path_copy = strdup(pathname);
     char* dir_name_path = strdup(path_copy);
 
-    char* dir_path = dirname(path_copy);
     char* dir_name = basename(dir_name_path);
     struct vnode* dir_vnode;
     // struct vnode* new_vnode;
@@ -228,9 +233,8 @@ int vfs_chdir(const char* pathname)
     strcpy(cur_work->dir_name, dir_name);
     // if (ret != 0 && !strtok(NULL, "/"))
     // ret = dir_vnode->v_ops->mkdir(dir_vnode, &new_vnode, dir_name);
-    kfree(dir_path);
-    kfree(dir_name);
-    kfree(path_copy);
+    // kfree(dir_name);
+    // kfree(path_copy);
     return ret;
 }
 
@@ -281,9 +285,10 @@ void initramfs()
         offset = file_size;
         offset = (offset + 3) & ~3;
         header = (cpio_newc_header*)(data + offset);
-        if (mode & 0040000)
+
+        if (mode & 0040000) {
             vfs_mkdir(new_path);
-        else if (mode & 0100000) {
+        } else if (mode & 0100000) {
             vfs_open(new_path, O_CREAT, &file);
             vfs_write(file, (void*)data, file_size);
             vfs_close(file);

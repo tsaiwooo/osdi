@@ -2,6 +2,7 @@
 #define __EXCEPTION_H_
 #include "core_timer.h"
 #include "cpio.h"
+#include "dev.h"
 #include "mailbox.h"
 #include "posix.h"
 #include "shell.h"

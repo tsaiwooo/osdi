@@ -2,6 +2,7 @@
 #define _MAIN_H_
 #include "buddy_system.h"
 #include "core_timer.h"
+#include "dev.h"
 #include "devicetree.h"
 #include "exception.h"
 #include "irq.h"

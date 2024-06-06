@@ -100,6 +100,7 @@ void* kmalloc(size_t size)
                 buddy.free_area[cur_order - 1].list = tmp;
             }
         }
+        // if((uint64_t)(buddy_start + now_page_index * page_size) >= 0x40000000) goto
         return buddy_start + now_page_index * page_size;
     } else {
         buddy.free_area[order].nr_free--;
@@ -234,6 +235,11 @@ void* DMA_malloc(int size)
     char* addr = cur->head[DMA_order_tmp].head->address;
     cur->head[DMA_order_tmp].head = cur->head[DMA_order_tmp].head->next;
     //   uart_printf("%d order, at address %x\n", DMA_order_tmp, addr);
+    // if ((uint64_t)addr >= 0x40000000) {
+    // uart_printf("ininin\n");
+    // uart_printf("addr = %x\n", addr);
+    // return DMA_malloc(size);
+    // }
     return (void*)addr;
 }
 

@@ -131,6 +131,14 @@ void svc_handler(int number, uint64_t ptr, uint64_t esr)
         case SYS_CHDIR:
             trap_ptr->x[0] = vfs_chdir((const char*)trap_ptr->x[0]);
             break;
+        case SYS_LSEEK: {
+            struct thread* cur = get_current();
+            struct file* file = cur->fd[trap_ptr->x[0]];
+            trap_ptr->x[0] = lseek64(file, trap_ptr->x[1], trap_ptr->x[2]);
+            break;
+        }
+        case SYS_IOCTL:
+            break;
         default:
             uart_printf("no support type system call = %d\n", type);
             break;
@@ -217,6 +225,10 @@ void fork_exec(uint64_t ptr)
     }
     for (int i = 1; i <= PAGE_SIZE; ++i) {
         *(char*)(child->kernel_stack - i) = *(char*)(parent->kernel_stack - i);
+    }
+    // lab7
+    for (int i = 0; i < MAX_FD_SIZE; ++i) {
+        child->fd[i] = parent->fd[i];
     }
     child->x19 = parent->x19;
     child->x20 = parent->x20;

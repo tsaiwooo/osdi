@@ -12,7 +12,9 @@ enum vfs {
     SYS_READ,
     SYS_MKDIR,
     SYS_MOUNT,
-    SYS_CHDIR
+    SYS_CHDIR,
+    SYS_LSEEK,
+    SYS_IOCTL
 };
 int getpid();
 int fork();
