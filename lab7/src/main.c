@@ -1,7 +1,7 @@
 #include "main.h"
 // define if using bootloader, dtb address will change
-#define LOCAL
-// #define bootloader
+// #define LOCAL
+#define bootloader
 // #define kmalloc_demo
 // #define dma_demo
 #define THREAD

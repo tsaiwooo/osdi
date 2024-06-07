@@ -195,7 +195,6 @@ void schedule()
         next = next->next;
     thread* node = thread_queue_delete((thread**)&thread_queue, (thread**)&cur);
     thread_queue_insert((thread**)&thread_queue, (thread**)&node);
-    // uart_printf("exit1\n");
     // delay(10000000);
     // uart_printf("cur_id = %d, next_id = %d\n", cur->thread_id, next->thread_id);
     do_signal();

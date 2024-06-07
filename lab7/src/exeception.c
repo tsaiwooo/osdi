@@ -214,7 +214,6 @@ void fork_exec(uint64_t ptr)
     // uint64_t function_addr;
     // asm volatile("mov %0, lr" : "=r"(function_addr) :);
     thread* child = thread_create((void*)0);
-    // uart_printf("exit2\n");
     // POSIX
     for (int i = 0; i <= SIG_NUMS; ++i) {
         child->POSIX.signal_handler[i] = parent->POSIX.signal_handler[i];

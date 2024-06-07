@@ -204,6 +204,7 @@ char* strncpy(char* to, const char* from, unsigned long size)
         to++;
         from++;
     }
+    *to = '\0';
     return save;
 }
 

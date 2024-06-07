@@ -7,9 +7,9 @@ int tmpfs_setup_mount(struct filesystem* fs, struct mount* mount)
     struct vnode* root = tmpfs_vnode();
     struct tmpfs_dir_data* root_data = (struct tmpfs_dir_data*)kmalloc(sizeof(struct tmpfs_dir_data));
     root_data->entry_counts = 0;
-    // for (int i = 0; i < 16; ++i) {
-    //     root_data->entries[i] = NULL;
-    // }
+    for (int i = 0; i < 16; ++i) {
+        root_data->entries[i] = NULL;
+    }
     root->internal = root_data;
     // type
     root->type = VNODE_TYPE_DIRECTORY;
@@ -46,7 +46,6 @@ struct vnode* tmpfs_vnode()
 {
     // struct vnode* vtmp = (struct vnode*)kmalloc(64);
     struct vnode* vtmp = (struct vnode*)kmalloc(sizeof(struct vnode));
-    // uart_printf("tmp vnode addr = %x\n", (char*)vtmp);
     struct vnode_operations* tmpfs_v_op = (struct vnode_operations*)kmalloc(sizeof(struct vnode_operations));
     struct file_operations* tmpfs_f_op = (struct file_operations*)kmalloc(sizeof(struct file_operations));
     tmpfs_v_op->create = &tmpfs_create;
@@ -118,7 +117,7 @@ int tmpfs_open(struct vnode* file_node, struct file** target)
 
 int tmpfs_close(struct file* file)
 {
-    kfree((char*)file);
+    // kfree((char*)file);
     return 0;
 }
 
@@ -134,7 +133,7 @@ int tmpfs_lookup(struct vnode* dir_node, struct vnode** target, const char* comp
     }
     return -1;
 }
-
+int i = 10;
 int tmpfs_create(struct vnode* dir_node, struct vnode** target, const char* component_name)
 {
     struct tmpfs_dir_data* dir_data = (struct tmpfs_dir_data*)dir_node->internal;
@@ -146,6 +145,11 @@ int tmpfs_create(struct vnode* dir_node, struct vnode** target, const char* comp
     // struct tmpfs_file_data* file_data = (struct tmpfs_file_data*)kmalloc(sizeof(struct tmpfs_file_data));
     struct tmpfs_file_data* file_data = (struct tmpfs_file_data*)kmalloc(PAGE_SIZE);
     file_data->data = NULL;
+    if (i--) {
+        file_data->data = kmalloc(128 * PAGE_SIZE);
+    } else {
+        file_data->data = kmalloc(PAGE_SIZE);
+    }
     file_data->size = 0;
 
     new_node->internal = file_data;
@@ -175,16 +179,13 @@ int tmpfs_mkdir(struct vnode* dir_node, struct vnode** target, const char* compo
     if (dir_data->entry_counts >= 16) {
         return -1;
     }
-    // uart_printf("exit0\n");
     struct vnode* new_dir = tmpfs_vnode();
     struct tmpfs_dir_data* new_dir_data = (struct tmpfs_dir_data*)kmalloc(sizeof(struct tmpfs_dir_data));
-    // uart_printf("exit1\n");
     new_dir_data->entry_counts = 0;
     new_dir->internal = new_dir_data;
     dir_data->entries[dir_data->entry_counts] = new_dir;
     // strcpy(dir_data->names[dir_data->entry_counts], component_name);
-    strncpy(dir_data->names[dir_data->entry_counts], component_name, strlen(component_name));
-    // uart_printf("exit2\n");
+    strncpy(dir_data->names[dir_data->entry_counts], component_name, strlen(component_name) + 1);
     // strncpy(dir_data->names[dir_data->entry_counts], component_name, sizeof(component_name));
     dir_data->entry_counts++;
     // basic 3

@@ -107,20 +107,15 @@ int vfs_read(struct file* file, void* buf, size_t len)
 int vfs_mkdir(const char* pathname)
 {
     char* path_copy = strdup(pathname);
-    // uart_printf("exit0\n");
     char* dir_name_path = strdup(pathname);
-    // uart_printf("exit1\n");
 
     char* dir_path = dirname(path_copy);
     char* dir_name = basename(dir_name_path);
-    // uart_printf("exit2\n");
 
     struct vnode* dir_vnode;
     struct vnode* new_vnode;
     int ret = vfs_lookup(dir_path, &dir_vnode);
-    // uart_printf("exit3\n");
     // if (ret != 0 && !strtok(NULL, "/"))
-    // uart_printf("v_ops addr = %x", dir_vnode->v_ops);
     ret = dir_vnode->v_ops->mkdir(dir_vnode, &new_vnode, dir_name);
     // kfree(dir_path);
     // kfree(dir_name);
@@ -285,7 +280,6 @@ void initramfs()
         offset = file_size;
         offset = (offset + 3) & ~3;
         header = (cpio_newc_header*)(data + offset);
-
         if (mode & 0040000) {
             vfs_mkdir(new_path);
         } else if (mode & 0100000) {

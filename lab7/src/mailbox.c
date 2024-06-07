@@ -63,14 +63,12 @@ int mailbox_call(unsigned char ch)
 
     unsigned int r = (((unsigned int)((unsigned long)&mbox) & ~0xF) | (ch & 0xF));
     /* wait until we can write to the mailbox */
-    // uart_printf("exit2\n");
     do {
         asm volatile("nop");
     } while (*MBOX_STATUS & MBOX_FULL);
     /* write the address of our message to the mailbox with channel identifier */
     *MBOX_WRITE = r;
     /* now wait for the response */
-    // uart_printf("exit3\n");
     while (1) {
         /* is there a response? */
         do {
@@ -91,14 +89,12 @@ int sys_mailbox(unsigned char ch, unsigned int* sys_mbox)
 
     unsigned int r = (((unsigned int)((unsigned long)sys_mbox) & ~0xF) | (ch & 0xF));
     /* wait until we can write to the mailbox */
-    // uart_printf("exit2\n");
     do {
         asm volatile("nop");
     } while (*MBOX_STATUS & MBOX_FULL);
     /* write the address of our message to the mailbox with channel identifier */
     *MBOX_WRITE = r;
     /* now wait for the response */
-    // uart_printf("exit3\n");
     while (1) {
         /* is there a response? */
         do {
