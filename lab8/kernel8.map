@@ -156,7 +156,7 @@ LOAD out/system_call.o
 LOAD out/sd.o
                 0x0000000000080000                . = 0x80000
 
-.text           0x0000000000080000     0xabd8
+.text           0x0000000000080000     0xad90
  *(.text.boot)
  .text.boot     0x0000000000080000       0xa0 start.o
                 0x0000000000080000                _start
@@ -303,245 +303,245 @@ LOAD out/sd.o
                 0x00000000000877a0                lseek64
  .text          0x000000000008780c       0x54 out/malloc.o
                 0x000000000008780c                simple_malloc
- .text          0x0000000000087860      0xed8 out/fat32.o
+ .text          0x0000000000087860     0x1090 out/fat32.o
                 0x0000000000087860                fat32_init
                 0x0000000000087ab4                fat32_setup_mount
                 0x0000000000087b34                fat32_new_data
-                0x0000000000087c18                fat32_vnode
-                0x0000000000087ce0                fat32_read
-                0x0000000000087e64                fat32_write
-                0x00000000000880e8                fat32_open
-                0x0000000000088158                fat32_close
-                0x000000000008816c                fat32_mkdir
-                0x0000000000088228                fat32_lookup
-                0x00000000000882c8                fat32_create
-                0x0000000000088388                get_block_idx
-                0x00000000000883c0                get_fat_blk_idx
-                0x00000000000883e8                allocate_new_cluster
-                0x0000000000088498                write_directory_entry
-                0x0000000000088578                read_directory_entry
- .text          0x0000000000088738       0xa8 out/reboot.o
-                0x0000000000088738                set_reboot
-                0x0000000000088764                reset
-                0x00000000000887ac                cancel_reset
- .text          0x00000000000887e0     0x1280 out/buddy_system.o
-                0x00000000000887e0                init_buddy
-                0x0000000000088a70                kmalloc
-                0x0000000000088ee0                kfree
-                0x000000000008910c                init_DMA
-                0x0000000000089330                DMA_order_funct
-                0x000000000008938c                DMA_malloc
-                0x00000000000894d4                DMA_free
-                0x0000000000089628                merge_page
-                0x0000000000089780                delete_page_in_freelists
-                0x00000000000898f0                switch_status_page_in_frame_list
-                0x000000000008996c                print_log
- .text          0x0000000000089a60      0x89c out/thread.o
-                0x0000000000089a60                test_function
-                0x0000000000089ac0                init_thread
-                0x0000000000089c38                thread_create
-                0x0000000000089dbc                thread_queue_insert
-                0x0000000000089e9c                degub_info
-                0x0000000000089f14                thread_queue_delete
-                0x0000000000089fdc                thread_queue_find
-                0x000000000008a060                schedule
-                0x000000000008a0e4                idle
-                0x000000000008a0f8                kill_zombies
-                0x000000000008a1d0                scheduler_timer
-                0x000000000008a1f4                test1
-                0x000000000008a258                fork_test
- .text          0x000000000008a2fc      0x2bc out/system_call.o
-                0x000000000008a2fc                getpid
-                0x000000000008a31c                uart_read
-                0x000000000008a344                uart_write
-                0x000000000008a36c                exec
-                0x000000000008a394                fork
-                0x000000000008a3b4                exit
-                0x000000000008a3c8                kill__
-                0x000000000008a420                mbox_call
-                0x000000000008a444                test_handler
-                0x000000000008a484                signal
-                0x000000000008a4a4                kill
-                0x000000000008a4c4                call_signal
-                0x000000000008a4e0                open
-                0x000000000008a4fc                close
-                0x000000000008a514                write
-                0x000000000008a538                read
-                0x000000000008a55c                mkdir
-                0x000000000008a578                mount
-                0x000000000008a5a0                chdir
- .text          0x000000000008a5b8      0x620 out/sd.o
-                0x000000000008a9b8                readblock
-                0x000000000008aab8                writeblock
-                0x000000000008abb8                sd_init
+                0x0000000000087c2c                fat32_vnode
+                0x0000000000087cf4                fat32_read
+                0x0000000000087e78                fat32_write
+                0x0000000000088160                fat32_open
+                0x00000000000881d0                fat32_close
+                0x00000000000881e4                fat32_mkdir
+                0x00000000000882a0                fat32_lookup
+                0x0000000000088340                fat32_create
+                0x0000000000088540                get_block_idx
+                0x0000000000088578                get_fat_blk_idx
+                0x00000000000885a0                allocate_new_cluster
+                0x0000000000088650                write_directory_entry
+                0x0000000000088730                read_directory_entry
+ .text          0x00000000000888f0       0xa8 out/reboot.o
+                0x00000000000888f0                set_reboot
+                0x000000000008891c                reset
+                0x0000000000088964                cancel_reset
+ .text          0x0000000000088998     0x1280 out/buddy_system.o
+                0x0000000000088998                init_buddy
+                0x0000000000088c28                kmalloc
+                0x0000000000089098                kfree
+                0x00000000000892c4                init_DMA
+                0x00000000000894e8                DMA_order_funct
+                0x0000000000089544                DMA_malloc
+                0x000000000008968c                DMA_free
+                0x00000000000897e0                merge_page
+                0x0000000000089938                delete_page_in_freelists
+                0x0000000000089aa8                switch_status_page_in_frame_list
+                0x0000000000089b24                print_log
+ .text          0x0000000000089c18      0x89c out/thread.o
+                0x0000000000089c18                test_function
+                0x0000000000089c78                init_thread
+                0x0000000000089df0                thread_create
+                0x0000000000089f74                thread_queue_insert
+                0x000000000008a054                degub_info
+                0x000000000008a0cc                thread_queue_delete
+                0x000000000008a194                thread_queue_find
+                0x000000000008a218                schedule
+                0x000000000008a29c                idle
+                0x000000000008a2b0                kill_zombies
+                0x000000000008a388                scheduler_timer
+                0x000000000008a3ac                test1
+                0x000000000008a410                fork_test
+ .text          0x000000000008a4b4      0x2bc out/system_call.o
+                0x000000000008a4b4                getpid
+                0x000000000008a4d4                uart_read
+                0x000000000008a4fc                uart_write
+                0x000000000008a524                exec
+                0x000000000008a54c                fork
+                0x000000000008a56c                exit
+                0x000000000008a580                kill__
+                0x000000000008a5d8                mbox_call
+                0x000000000008a5fc                test_handler
+                0x000000000008a63c                signal
+                0x000000000008a65c                kill
+                0x000000000008a67c                call_signal
+                0x000000000008a698                open
+                0x000000000008a6b4                close
+                0x000000000008a6cc                write
+                0x000000000008a6f0                read
+                0x000000000008a714                mkdir
+                0x000000000008a730                mount
+                0x000000000008a758                chdir
+ .text          0x000000000008a770      0x620 out/sd.o
+                0x000000000008ab70                readblock
+                0x000000000008ac70                writeblock
+                0x000000000008ad70                sd_init
 
-.iplt           0x000000000008abd8        0x0
- .iplt          0x000000000008abd8        0x0 start.o
+.iplt           0x000000000008ad90        0x0
+ .iplt          0x000000000008ad90        0x0 start.o
 
-.rodata         0x000000000008abd8      0xa14
+.rodata         0x000000000008ad90      0xa14
  *(.rodata)
- .rodata        0x000000000008abd8       0x71 out/mailbox.o
- *fill*         0x000000000008ac49        0x7 
- .rodata        0x000000000008ac50        0x9 out/core_timer.o
- *fill*         0x000000000008ac59        0x7 
- .rodata        0x000000000008ac60       0x1a out/uart.o
- *fill*         0x000000000008ac7a        0x6 
- .rodata        0x000000000008ac80       0x4b out/irq.o
- *fill*         0x000000000008accb        0x5 
- .rodata        0x000000000008acd0      0x38e out/shell.o
- *fill*         0x000000000008b05e        0x2 
- .rodata        0x000000000008b060       0x93 out/vfs.o
- *fill*         0x000000000008b0f3        0x5 
- .rodata        0x000000000008b0f8      0x16f out/exeception.o
- *fill*         0x000000000008b267        0x1 
- .rodata        0x000000000008b268       0x61 out/devicetree.o
- *fill*         0x000000000008b2c9        0x7 
- .rodata        0x000000000008b2d0       0x62 out/reserve_memory.o
- *fill*         0x000000000008b332        0x6 
- .rodata        0x000000000008b338       0x48 out/cpio.o
- .rodata        0x000000000008b380       0xce out/main.o
- *fill*         0x000000000008b44e        0x2 
- .rodata        0x000000000008b450       0x68 out/dev.o
- .rodata        0x000000000008b4b8       0x12 out/fat32.o
- *fill*         0x000000000008b4ca        0x6 
- .rodata        0x000000000008b4d0       0x2a out/buddy_system.o
- *fill*         0x000000000008b4fa        0x6 
- .rodata        0x000000000008b500       0x9f out/thread.o
- *fill*         0x000000000008b59f        0x1 
- .rodata        0x000000000008b5a0       0x4c out/system_call.o
+ .rodata        0x000000000008ad90       0x71 out/mailbox.o
+ *fill*         0x000000000008ae01        0x7 
+ .rodata        0x000000000008ae08        0x9 out/core_timer.o
+ *fill*         0x000000000008ae11        0x7 
+ .rodata        0x000000000008ae18       0x1a out/uart.o
+ *fill*         0x000000000008ae32        0x6 
+ .rodata        0x000000000008ae38       0x4b out/irq.o
+ *fill*         0x000000000008ae83        0x5 
+ .rodata        0x000000000008ae88      0x38e out/shell.o
+ *fill*         0x000000000008b216        0x2 
+ .rodata        0x000000000008b218       0x93 out/vfs.o
+ *fill*         0x000000000008b2ab        0x5 
+ .rodata        0x000000000008b2b0      0x16f out/exeception.o
+ *fill*         0x000000000008b41f        0x1 
+ .rodata        0x000000000008b420       0x61 out/devicetree.o
+ *fill*         0x000000000008b481        0x7 
+ .rodata        0x000000000008b488       0x62 out/reserve_memory.o
+ *fill*         0x000000000008b4ea        0x6 
+ .rodata        0x000000000008b4f0       0x48 out/cpio.o
+ .rodata        0x000000000008b538       0xce out/main.o
+ *fill*         0x000000000008b606        0x2 
+ .rodata        0x000000000008b608       0x68 out/dev.o
+ .rodata        0x000000000008b670       0x12 out/fat32.o
+ *fill*         0x000000000008b682        0x6 
+ .rodata        0x000000000008b688       0x2a out/buddy_system.o
+ *fill*         0x000000000008b6b2        0x6 
+ .rodata        0x000000000008b6b8       0x9f out/thread.o
+ *fill*         0x000000000008b757        0x1 
+ .rodata        0x000000000008b758       0x4c out/system_call.o
                 [!provide]                        PROVIDE (_data = .)
 
-.rela.dyn       0x000000000008b5f0        0x0
- .rela.iplt     0x000000000008b5f0        0x0 start.o
+.rela.dyn       0x000000000008b7a8        0x0
+ .rela.iplt     0x000000000008b7a8        0x0 start.o
  .rela.text.boot
-                0x000000000008b5f0        0x0 start.o
- .rela.got      0x000000000008b5f0        0x0 start.o
+                0x000000000008b7a8        0x0 start.o
+ .rela.got      0x000000000008b7a8        0x0 start.o
  .rela.data.rel
-                0x000000000008b5f0        0x0 start.o
+                0x000000000008b7a8        0x0 start.o
 
-.data           0x000000000008b5ec        0xc
+.data           0x000000000008b7a4        0xc
  *(.data)
- .data          0x000000000008b5ec        0x0 start.o
- .data          0x000000000008b5ec        0x0 exeception.o
- .data          0x000000000008b5ec        0x0 out/mailbox.o
- .data          0x000000000008b5ec        0x0 out/core_timer.o
- .data          0x000000000008b5ec        0x4 out/tmpfs.o
-                0x000000000008b5ec                i
- .data          0x000000000008b5f0        0x0 out/uart.o
- .data          0x000000000008b5f0        0x4 out/irq.o
-                0x000000000008b5f0                cur_nv
- .data          0x000000000008b5f4        0x0 out/shell.o
- .data          0x000000000008b5f4        0x0 out/my_string.o
- .data          0x000000000008b5f4        0x0 out/vfs.o
- .data          0x000000000008b5f4        0x0 out/exeception.o
- .data          0x000000000008b5f4        0x0 out/math_.o
- .data          0x000000000008b5f4        0x0 out/devicetree.o
- .data          0x000000000008b5f4        0x0 out/reserve_memory.o
- .data          0x000000000008b5f4        0x0 out/cpio.o
- .data          0x000000000008b5f4        0x0 out/function.o
- .data          0x000000000008b5f4        0x0 out/main.o
- .data          0x000000000008b5f4        0x0 out/dev.o
- .data          0x000000000008b5f4        0x0 out/malloc.o
- .data          0x000000000008b5f4        0x0 out/fat32.o
- .data          0x000000000008b5f4        0x0 out/reboot.o
- .data          0x000000000008b5f4        0x0 out/buddy_system.o
- .data          0x000000000008b5f4        0x4 out/thread.o
- .data          0x000000000008b5f8        0x0 out/system_call.o
- .data          0x000000000008b5f8        0x0 out/sd.o
+ .data          0x000000000008b7a4        0x0 start.o
+ .data          0x000000000008b7a4        0x0 exeception.o
+ .data          0x000000000008b7a4        0x0 out/mailbox.o
+ .data          0x000000000008b7a4        0x0 out/core_timer.o
+ .data          0x000000000008b7a4        0x4 out/tmpfs.o
+                0x000000000008b7a4                i
+ .data          0x000000000008b7a8        0x0 out/uart.o
+ .data          0x000000000008b7a8        0x4 out/irq.o
+                0x000000000008b7a8                cur_nv
+ .data          0x000000000008b7ac        0x0 out/shell.o
+ .data          0x000000000008b7ac        0x0 out/my_string.o
+ .data          0x000000000008b7ac        0x0 out/vfs.o
+ .data          0x000000000008b7ac        0x0 out/exeception.o
+ .data          0x000000000008b7ac        0x0 out/math_.o
+ .data          0x000000000008b7ac        0x0 out/devicetree.o
+ .data          0x000000000008b7ac        0x0 out/reserve_memory.o
+ .data          0x000000000008b7ac        0x0 out/cpio.o
+ .data          0x000000000008b7ac        0x0 out/function.o
+ .data          0x000000000008b7ac        0x0 out/main.o
+ .data          0x000000000008b7ac        0x0 out/dev.o
+ .data          0x000000000008b7ac        0x0 out/malloc.o
+ .data          0x000000000008b7ac        0x0 out/fat32.o
+ .data          0x000000000008b7ac        0x0 out/reboot.o
+ .data          0x000000000008b7ac        0x0 out/buddy_system.o
+ .data          0x000000000008b7ac        0x4 out/thread.o
+ .data          0x000000000008b7b0        0x0 out/system_call.o
+ .data          0x000000000008b7b0        0x0 out/sd.o
 
-.igot.plt       0x000000000008b5f8        0x0
- .igot.plt      0x000000000008b5f8        0x0 start.o
+.igot.plt       0x000000000008b7b0        0x0
+ .igot.plt      0x000000000008b7b0        0x0 start.o
 
-.got            0x000000000008b5f8      0x100
- .got           0x000000000008b5f8      0x100 start.o
-                0x000000000008b5f8                _GLOBAL_OFFSET_TABLE_
+.got            0x000000000008b7b0      0x100
+ .got           0x000000000008b7b0      0x100 start.o
+                0x000000000008b7b0                _GLOBAL_OFFSET_TABLE_
 
-.got.plt        0x000000000008b6f8       0x18
- .got.plt       0x000000000008b6f8       0x18 start.o
+.got.plt        0x000000000008b8b0       0x18
+ .got.plt       0x000000000008b8b0       0x18 start.o
 
-.data.rel       0x000000000008b710       0x48
- .data.rel      0x000000000008b710       0x30 out/reserve_memory.o
-                0x000000000008b710                spin_start
-                0x000000000008b718                spin_end
-                0x000000000008b720                heap_start
-                0x000000000008b728                heap_end
-                0x000000000008b730                kernel_start
-                0x000000000008b738                kernel_end
- .data.rel      0x000000000008b740        0x8 out/malloc.o
-                0x000000000008b740                top
- .data.rel      0x000000000008b748       0x10 out/buddy_system.o
-                0x000000000008b748                buddy_start
-                0x000000000008b750                buddy_end
+.data.rel       0x000000000008b8c8       0x48
+ .data.rel      0x000000000008b8c8       0x30 out/reserve_memory.o
+                0x000000000008b8c8                spin_start
+                0x000000000008b8d0                spin_end
+                0x000000000008b8d8                heap_start
+                0x000000000008b8e0                heap_end
+                0x000000000008b8e8                kernel_start
+                0x000000000008b8f0                kernel_end
+ .data.rel      0x000000000008b8f8        0x8 out/malloc.o
+                0x000000000008b8f8                top
+ .data.rel      0x000000000008b900       0x10 out/buddy_system.o
+                0x000000000008b900                buddy_start
+                0x000000000008b908                buddy_end
 
-.bss            0x000000000008b760      0xa53
-                0x000000000008b760                . = ALIGN (0x10)
-                0x000000000008b760                __bss_start = .
+.bss            0x000000000008b910      0xa53
+                0x000000000008b910                . = ALIGN (0x10)
+                0x000000000008b910                __bss_start = .
  *(.bss .bss.*)
- .bss           0x000000000008b760        0x0 start.o
- .bss           0x000000000008b760        0x0 exeception.o
- .bss           0x000000000008b760        0x0 out/mailbox.o
- .bss           0x000000000008b760        0x0 out/core_timer.o
- .bss           0x000000000008b760        0x0 out/tmpfs.o
- .bss           0x000000000008b760      0x814 out/uart.o
-                0x000000000008b760                tx_buf
-                0x000000000008bb60                tx_write_idx
-                0x000000000008bb64                tx_read_idx
-                0x000000000008bb68                rx_buf
-                0x000000000008bf68                rx_write_idx
-                0x000000000008bf6c                rx_read_idx
-                0x000000000008bf70                a
- .bss           0x000000000008bf74        0x0 out/irq.o
- .bss           0x000000000008bf74        0x0 out/shell.o
- *fill*         0x000000000008bf74        0x4 
- .bss           0x000000000008bf78        0x8 out/my_string.o
- .bss           0x000000000008bf80        0x0 out/vfs.o
- .bss           0x000000000008bf80        0x0 out/exeception.o
- .bss           0x000000000008bf80        0x0 out/math_.o
- .bss           0x000000000008bf80        0x8 out/devicetree.o
-                0x000000000008bf80                dtb_len
- .bss           0x000000000008bf88        0x0 out/reserve_memory.o
- .bss           0x000000000008bf88        0x0 out/cpio.o
- .bss           0x000000000008bf88        0x0 out/function.o
- .bss           0x000000000008bf88        0x0 out/main.o
- .bss           0x000000000008bf88        0x0 out/dev.o
- .bss           0x000000000008bf88        0x0 out/malloc.o
- .bss           0x000000000008bf88        0x0 out/fat32.o
- .bss           0x000000000008bf88        0x0 out/reboot.o
- .bss           0x000000000008bf88        0x0 out/buddy_system.o
- .bss           0x000000000008bf88        0x0 out/thread.o
- .bss           0x000000000008bf88        0x0 out/system_call.o
- .bss           0x000000000008bf88        0x4 out/sd.o
+ .bss           0x000000000008b910        0x0 start.o
+ .bss           0x000000000008b910        0x0 exeception.o
+ .bss           0x000000000008b910        0x0 out/mailbox.o
+ .bss           0x000000000008b910        0x0 out/core_timer.o
+ .bss           0x000000000008b910        0x0 out/tmpfs.o
+ .bss           0x000000000008b910      0x814 out/uart.o
+                0x000000000008b910                tx_buf
+                0x000000000008bd10                tx_write_idx
+                0x000000000008bd14                tx_read_idx
+                0x000000000008bd18                rx_buf
+                0x000000000008c118                rx_write_idx
+                0x000000000008c11c                rx_read_idx
+                0x000000000008c120                a
+ .bss           0x000000000008c124        0x0 out/irq.o
+ .bss           0x000000000008c124        0x0 out/shell.o
+ *fill*         0x000000000008c124        0x4 
+ .bss           0x000000000008c128        0x8 out/my_string.o
+ .bss           0x000000000008c130        0x0 out/vfs.o
+ .bss           0x000000000008c130        0x0 out/exeception.o
+ .bss           0x000000000008c130        0x0 out/math_.o
+ .bss           0x000000000008c130        0x8 out/devicetree.o
+                0x000000000008c130                dtb_len
+ .bss           0x000000000008c138        0x0 out/reserve_memory.o
+ .bss           0x000000000008c138        0x0 out/cpio.o
+ .bss           0x000000000008c138        0x0 out/function.o
+ .bss           0x000000000008c138        0x0 out/main.o
+ .bss           0x000000000008c138        0x0 out/dev.o
+ .bss           0x000000000008c138        0x0 out/malloc.o
+ .bss           0x000000000008c138        0x0 out/fat32.o
+ .bss           0x000000000008c138        0x0 out/reboot.o
+ .bss           0x000000000008c138        0x0 out/buddy_system.o
+ .bss           0x000000000008c138        0x0 out/thread.o
+ .bss           0x000000000008c138        0x0 out/system_call.o
+ .bss           0x000000000008c138        0x4 out/sd.o
  *(COMMON)
- *fill*         0x000000000008bf8c        0x4 
- COMMON         0x000000000008bf90      0x1e0 out/mailbox.o
-                0x000000000008bf90                fat
-                0x000000000008bf98                kernel_thread
-                0x000000000008bfa0                mbox
-                0x000000000008bfc0                rootfs
-                0x000000000008bfc8                thread_count
-                0x000000000008bfd0                timer_queue
-                0x000000000008bfd8                CPIO_DEFAULT_PLACE
-                0x000000000008bfe0                global_fs_list
-                0x000000000008c030                task_queue
-                0x000000000008c038                filesystem_count
-                0x000000000008c040                queue_head
-                0x000000000008c048                DMA_head
-                0x000000000008c050                dtb_place
-                0x000000000008c058                thread_queue
-                0x000000000008c060                buddy
-                0x000000000008c150                zombie_queue
-                0x000000000008c158                cur_work
-                0x000000000008c160                CPIO_DEFAULT_PLACE_END
-                0x000000000008c168                frame_array
- COMMON         0x000000000008c170       0x10 out/vfs.o
-                0x000000000008c170                tmpfs_f_ops
-                0x000000000008c178                tmpfs_v_ops
- COMMON         0x000000000008c180       0x18 out/dev.o
-                0x000000000008c180                fb
- COMMON         0x000000000008c198       0x1b out/fat32.o
-                0x000000000008c198                fat32_metadata
-                0x000000000008c1b3                __bss_end = .
-                0x000000000008c1b3                _end = .
+ *fill*         0x000000000008c13c        0x4 
+ COMMON         0x000000000008c140      0x1e0 out/mailbox.o
+                0x000000000008c140                fat
+                0x000000000008c148                kernel_thread
+                0x000000000008c150                mbox
+                0x000000000008c170                rootfs
+                0x000000000008c178                thread_count
+                0x000000000008c180                timer_queue
+                0x000000000008c188                CPIO_DEFAULT_PLACE
+                0x000000000008c190                global_fs_list
+                0x000000000008c1e0                task_queue
+                0x000000000008c1e8                filesystem_count
+                0x000000000008c1f0                queue_head
+                0x000000000008c1f8                DMA_head
+                0x000000000008c200                dtb_place
+                0x000000000008c208                thread_queue
+                0x000000000008c210                buddy
+                0x000000000008c300                zombie_queue
+                0x000000000008c308                cur_work
+                0x000000000008c310                CPIO_DEFAULT_PLACE_END
+                0x000000000008c318                frame_array
+ COMMON         0x000000000008c320       0x10 out/vfs.o
+                0x000000000008c320                tmpfs_f_ops
+                0x000000000008c328                tmpfs_v_ops
+ COMMON         0x000000000008c330       0x18 out/dev.o
+                0x000000000008c330                fb
+ COMMON         0x000000000008c348       0x1b out/fat32.o
+                0x000000000008c348                fat32_metadata
+                0x000000000008c363                __bss_end = .
+                0x000000000008c363                _end = .
 
 /DISCARD/
  *(.comment)
@@ -557,11 +557,11 @@ LOAD out/sd.o
                 0x0000000000000000                _buddy_start = 0x0
                 0x000000003c000000                _buddy_end = 0x3c000000
                 0x0000000000060000                _kernel_start = 0x60000
-                0x000000000008c1b3                _kernel_end = _end
+                0x000000000008c363                _kernel_end = _end
 OUTPUT(kernel8.elf elf64-littleaarch64)
 LOAD linker stubs
 
-.debug_line     0x0000000000000000     0x402e
+.debug_line     0x0000000000000000     0x4120
  .debug_line    0x0000000000000000       0x5e start.o
  .debug_line    0x000000000000005e       0xff exeception.o
  .debug_line    0x000000000000015d      0x1ca out/mailbox.o
@@ -581,14 +581,14 @@ LOAD linker stubs
  .debug_line    0x00000000000027a5      0x146 out/main.o
  .debug_line    0x00000000000028eb      0x1ec out/dev.o
  .debug_line    0x0000000000002ad7       0xe7 out/malloc.o
- .debug_line    0x0000000000002bbe      0x54d out/fat32.o
- .debug_line    0x000000000000310b       0x5e out/reboot.o
- .debug_line    0x0000000000003169      0x63f out/buddy_system.o
- .debug_line    0x00000000000037a8      0x470 out/thread.o
- .debug_line    0x0000000000003c18      0x1e7 out/system_call.o
- .debug_line    0x0000000000003dff      0x22f out/sd.o
+ .debug_line    0x0000000000002bbe      0x63f out/fat32.o
+ .debug_line    0x00000000000031fd       0x5e out/reboot.o
+ .debug_line    0x000000000000325b      0x63f out/buddy_system.o
+ .debug_line    0x000000000000389a      0x470 out/thread.o
+ .debug_line    0x0000000000003d0a      0x1e7 out/system_call.o
+ .debug_line    0x0000000000003ef1      0x22f out/sd.o
 
-.debug_info     0x0000000000000000    0x12fff
+.debug_info     0x0000000000000000    0x130e9
  .debug_info    0x0000000000000000       0x2e start.o
  .debug_info    0x000000000000002e       0x2e exeception.o
  .debug_info    0x000000000000005c      0xb85 out/mailbox.o
@@ -608,14 +608,14 @@ LOAD linker stubs
  .debug_info    0x000000000000b889      0xadb out/main.o
  .debug_info    0x000000000000c364      0xcfe out/dev.o
  .debug_info    0x000000000000d062      0xab5 out/malloc.o
- .debug_info    0x000000000000db17     0x1667 out/fat32.o
- .debug_info    0x000000000000f17e       0xe2 out/reboot.o
- .debug_info    0x000000000000f260     0x101b out/buddy_system.o
- .debug_info    0x000000000001027b      0xec3 out/thread.o
- .debug_info    0x000000000001113e     0x114d out/system_call.o
- .debug_info    0x000000000001228b      0xd74 out/sd.o
+ .debug_info    0x000000000000db17     0x1751 out/fat32.o
+ .debug_info    0x000000000000f268       0xe2 out/reboot.o
+ .debug_info    0x000000000000f34a     0x101b out/buddy_system.o
+ .debug_info    0x0000000000010365      0xec3 out/thread.o
+ .debug_info    0x0000000000011228     0x114d out/system_call.o
+ .debug_info    0x0000000000012375      0xd74 out/sd.o
 
-.debug_abbrev   0x0000000000000000     0x381c
+.debug_abbrev   0x0000000000000000     0x3800
  .debug_abbrev  0x0000000000000000       0x14 start.o
  .debug_abbrev  0x0000000000000014       0x14 exeception.o
  .debug_abbrev  0x0000000000000028      0x24e out/mailbox.o
@@ -635,12 +635,12 @@ LOAD linker stubs
  .debug_abbrev  0x0000000000002172      0x216 out/main.o
  .debug_abbrev  0x0000000000002388      0x2b4 out/dev.o
  .debug_abbrev  0x000000000000263c      0x207 out/malloc.o
- .debug_abbrev  0x0000000000002843      0x32e out/fat32.o
- .debug_abbrev  0x0000000000002b71       0xac out/reboot.o
- .debug_abbrev  0x0000000000002c1d      0x303 out/buddy_system.o
- .debug_abbrev  0x0000000000002f20      0x324 out/thread.o
- .debug_abbrev  0x0000000000003244      0x2de out/system_call.o
- .debug_abbrev  0x0000000000003522      0x2fa out/sd.o
+ .debug_abbrev  0x0000000000002843      0x312 out/fat32.o
+ .debug_abbrev  0x0000000000002b55       0xac out/reboot.o
+ .debug_abbrev  0x0000000000002c01      0x303 out/buddy_system.o
+ .debug_abbrev  0x0000000000002f04      0x324 out/thread.o
+ .debug_abbrev  0x0000000000003228      0x2de out/system_call.o
+ .debug_abbrev  0x0000000000003506      0x2fa out/sd.o
 
 .debug_aranges  0x0000000000000000      0x4b0
  .debug_aranges

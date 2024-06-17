@@ -68,6 +68,7 @@ struct fat32_data* fat32_new_data(int type, const char* name, unsigned int size,
         struct fat32_file_internal* tmp_file;
         tmp_file = (struct fat32_file_internal*)kmalloc(sizeof(struct fat32_file_internal));
         tmp_file->size = 0;
+        tmp_file->data = kmalloc(PAGE_SIZE);
         tmp->data = (void*)tmp_file;
     }
     return tmp;
@@ -124,17 +125,79 @@ int fat32_read(struct file* file, void* buf, size_t len)
     return bytes_read;
 }
 
+// int fat32_write(struct file* file, const void* buf, size_t len)
+// {
+//     struct fat32_data* file_data = (struct fat32_data*)file->vnode->internal;
+//     uint32_t cur_cluster = file_data->first_cluster;
+//     uint32_t file_offset = file->f_pos;
+//     uint32_t bytes_2_write = len;
+//     uint8_t fat[BLOCK_SIZE];
+//     uint8_t tmp_buf[BLOCK_SIZE];
+
+//     uint32_t bytes_written = 0;
+//     uint32_t prev_cluster = 0;
+
+//     if (cur_cluster == 0) { // 如果檔案還沒有分配簇
+//         cur_cluster = allocate_new_cluster();
+//         if (cur_cluster == FAT_BAD) {
+//             return -1; // 無剩餘空間
+//         }
+//         file_data->first_cluster = cur_cluster; // 為檔案分配第一個簇
+//     }
+
+//     while (bytes_written < bytes_2_write) {
+//         int chunk_size = (bytes_2_write - bytes_written) < BLOCK_SIZE ? (bytes_2_write - bytes_written) : BLOCK_SIZE;
+//         memcpy(tmp_buf, buf + bytes_written, chunk_size);
+
+//         if (chunk_size < BLOCK_SIZE) { // 如果寫入的不是整個塊，先讀取當前塊
+//             readblock(get_block_idx(cur_cluster), tmp_buf);
+//             memcpy(tmp_buf + file_offset % BLOCK_SIZE, buf + bytes_written, chunk_size);
+//         }
+
+//         writeblock(get_block_idx(cur_cluster), tmp_buf);
+//         bytes_written += chunk_size;
+//         file_offset += chunk_size;
+
+//         if (file_offset % BLOCK_SIZE == 0 || bytes_written == bytes_2_write) { // 如果到達簇的末端或所有字節都已寫入
+//             readblock(get_fat_blk_idx(cur_cluster), fat);
+//             uint32_t next_cluster = ((uint32_t*)fat)[cur_cluster % FAT_ENTRIES_PER_BLOCK];
+//             if (next_cluster == FAT_END) {
+//                 next_cluster = allocate_new_cluster();
+//                 if (next_cluster == FAT_BAD) {
+//                     return -1; // 無剩餘空間
+//                 }
+//                 ((uint32_t*)fat)[cur_cluster % FAT_ENTRIES_PER_BLOCK] = next_cluster;
+//                 writeblock(get_fat_blk_idx(cur_cluster), fat); // 更新磁盤上的FAT
+//             }
+//             cur_cluster = next_cluster;
+//         }
+//     }
+
+//     file->f_pos = file_offset; // 更新檔案位置
+//     if (file_data->size < file_offset) {
+//         file_data->size = file_offset; // 如果檔案增大，更新檔案大小
+//     }
+//     return bytes_written;
+// }
+
 int fat32_write(struct file* file, const void* buf, size_t len)
 {
     struct fat32_data* file_data = (struct fat32_data*)file->vnode->internal;
     uint32_t cur_cluster = file_data->first_cluster;
     uint32_t file_offset = file->f_pos;
     uint32_t bytes_2_write = len;
-    uint8_t fat[BLOCK_SIZE];
     uint8_t tmp_buf[BLOCK_SIZE];
-
     uint32_t bytes_written = 0;
     uint32_t prev_cluster = 0;
+
+    // If the file is empty and doesn't have a cluster allocated, allocate one
+    if (cur_cluster == 0) {
+        cur_cluster = allocate_new_cluster();
+        if (cur_cluster == FAT_BAD) {
+            return -1; // No space left
+        }
+        file_data->first_cluster = cur_cluster;
+    }
 
     while (bytes_written < bytes_2_write) {
         if (cur_cluster == FAT_END) {
@@ -146,17 +209,18 @@ int fat32_write(struct file* file, const void* buf, size_t len)
 
             if (prev_cluster != 0) {
                 // Update FAT table to link the previous cluster to the new one
+                uint8_t fat[BLOCK_SIZE];
                 readblock(get_fat_blk_idx(prev_cluster), fat);
                 ((uint32_t*)fat)[prev_cluster % FAT_ENTRIES_PER_BLOCK] = cur_cluster;
                 writeblock(get_fat_blk_idx(prev_cluster), fat);
-            } else {
-                file_data->first_cluster = cur_cluster;
             }
         }
 
         readblock(get_block_idx(cur_cluster), tmp_buf);
         int chunk_size = (bytes_2_write - bytes_written) < BLOCK_SIZE ? (bytes_2_write - bytes_written) : BLOCK_SIZE;
         memcpy(tmp_buf, buf + bytes_written, chunk_size);
+        // for (int i = chunk_size; i < BLOCK_SIZE; ++i)
+        tmp_buf[chunk_size] = '\0';
         writeblock(get_block_idx(cur_cluster), tmp_buf);
 
         bytes_written += chunk_size;
@@ -167,18 +231,30 @@ int fat32_write(struct file* file, const void* buf, size_t len)
         }
 
         prev_cluster = cur_cluster;
+        uint8_t fat[BLOCK_SIZE];
         readblock(get_fat_blk_idx(cur_cluster), fat);
         cur_cluster = ((uint32_t*)fat)[cur_cluster % FAT_ENTRIES_PER_BLOCK];
     }
 
+    // If this was the last cluster, mark it as FAT_END
     if (prev_cluster != 0) {
+        uint8_t fat[BLOCK_SIZE];
         readblock(get_fat_blk_idx(prev_cluster), fat);
         ((uint32_t*)fat)[prev_cluster % FAT_ENTRIES_PER_BLOCK] = FAT_END;
         writeblock(get_fat_blk_idx(prev_cluster), fat);
     }
 
     file->f_pos = file_offset;
-    file_data->size += bytes_written;
+    file_data->size = file_offset; // Update the file size to the new offset
+    // update directoey file size
+    // Write updated file size to directory entry
+    struct fat32_directory_entry dir_entry;
+    if (read_directory_entry(file_data->parent->first_cluster, file_data->name, &dir_entry) == 0) {
+        // uart_printf("clus = %d, size = %d\n", file_data->parent->first_cluster, file_data->size);
+        dir_entry.file_size = file_data->size;
+        write_directory_entry(file_data->parent->first_cluster, &dir_entry);
+    }
+
     return bytes_written;
 }
 
@@ -235,21 +311,77 @@ int fat32_lookup(struct vnode* dir_node, struct vnode** target, const char* comp
     return -1;
 }
 
+// int fat32_create(struct vnode* dir_node, struct vnode** target, const char* component_name)
+// {
+//     struct fat32_data* dir_data = (struct fat32_data*)dir_node->internal;
+//     struct fat32_directory_entry new_entry;
+
+//     // memset(&new_entry, 0, sizeof(new_entry));
+//     // strncpy(new_entry.dir_name, component_name, sizeof(new_entry.dir_name));
+//     strncpy(new_entry.filename, component_name, 8);
+//     strncpy(new_entry.ext, component_name + 8, 3);
+//     int idx = 0;
+//     for (; idx < 8; ++idx) {
+//         if (component_name[idx] == '.') {
+//             break;
+//         } else
+//             new_entry.filename[idx] = component_name[idx];
+//     }
+//     new_entry.filename[idx++] = '\0';
+//     for (int ext = 0; ext < 3; ++ext, ++idx) {
+//         if (component_name[idx] == '.') {
+//             break;
+//         } else
+//             new_entry.ext[ext] = component_name[idx];
+//     }
+//     uart_printf("filename = %s\n", new_entry.filename);
+//     uart_printf("ext = %s\n", new_entry.ext);
+//     new_entry.first_cluster_high = 0; // Modify as needed
+//     new_entry.first_cluster_low = allocate_new_cluster();
+//     new_entry.file_size = 0;
+//     new_entry.attributes = FILE;
+
+//     write_directory_entry(dir_data->first_cluster, &new_entry);
+
+//     *target = fat32_vnode();
+//     struct fat32_data* new_file_data = fat32_new_data(FILE, component_name, 0, new_entry.first_cluster_low, dir_data);
+//     (*target)->internal = new_file_data;
+
+//     return 0;
+// }
+
 int fat32_create(struct vnode* dir_node, struct vnode** target, const char* component_name)
 {
     struct fat32_data* dir_data = (struct fat32_data*)dir_node->internal;
     struct fat32_directory_entry new_entry;
 
     // memset(&new_entry, 0, sizeof(new_entry));
-    // strncpy(new_entry.dir_name, component_name, sizeof(new_entry.dir_name));
-    strncpy(new_entry.filename, component_name, 8);
-    strncpy(new_entry.ext, component_name + 8, 3);
+    int i;
+    for (i = 0; i < 8 && component_name[i] != '.' && component_name[i] != '\0'; ++i) {
+        new_entry.filename[i] = component_name[i];
+    }
+    for (int j = i; j < 8; ++j) {
+        new_entry.filename[j] = ' ';
+    }
+    if (component_name[i] == '.') {
+        ++i;
+        for (int j = 0; j < 3 && component_name[i] != '\0'; ++j, ++i) {
+            new_entry.ext[j] = component_name[i];
+        }
+    }
+    for (int j = i; j < 3; ++j) {
+        new_entry.ext[j] = ' ';
+    }
+
     new_entry.first_cluster_high = 0; // Modify as needed
+    // int x = 10;
+    // while (x--)
     new_entry.first_cluster_low = allocate_new_cluster();
     new_entry.file_size = 0;
-    new_entry.attributes = FILE;
-
-    write_directory_entry(dir_data->first_cluster, &new_entry);
+    new_entry.attributes = 0x04;
+    if (write_directory_entry(dir_data->first_cluster, &new_entry) < 0) {
+        return -1;
+    }
 
     *target = fat32_vnode();
     struct fat32_data* new_file_data = fat32_new_data(FILE, component_name, 0, new_entry.first_cluster_low, dir_data);
@@ -288,6 +420,7 @@ int write_directory_entry(uint32_t dir_cluster, struct fat32_directory_entry* en
 
     for (int i = 0; i < MAX_ENTRIES; i++) {
         if (dir_entries[i].filename[0] == 0 || dir_entries[i].filename[0] == 0xE5) {
+            // if (dir_entries[i].filename[0] == 0xE5) {
             memcpy(&dir_entries[i], entry, sizeof(struct fat32_directory_entry));
             writeblock(get_block_idx(dir_cluster), tmp_buf);
             return 0;
